@@ -32,6 +32,18 @@ Required subpaths/files (baseline contract):
 - No hidden defaults without docs mention.
 - Validate every config against `docs/config_schema.md` before submission.
 
+## Literature Benchmark Convention
+- Store extracted benchmark data under `literature/benchmarks/`.
+- Use CSV as canonical machine-readable format for target curves/anchors.
+- Every benchmark row must include DOI, source location, and extraction status.
+
+## Presentation Convention
+- Major update deck naming:
+  - `<YYYYMMDD>_<stage_or_feature>_<topic>.pptx`
+  - `<YYYYMMDD>_<stage_or_feature>_<topic>.pdf`
+- Keep the generated manifest next to decks:
+  - `<YYYYMMDD>_<stage_or_feature>_<topic>_manifest.json`
+
 ## Metadata And Provenance Expectations
 `manifest.json` must include:
 - run ID, UTC timestamp, git commit hash

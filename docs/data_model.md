@@ -81,3 +81,9 @@ Each run will also require a concise human-readable `report.html` summarizing:
 - pass/fail decisions and next action
 
 The HTML report is mandatory for completed research runs in later tasks.
+
+## Major-Update Presentation Requirement
+For major result sets/feature additions, generate and version:
+- a deck manifest JSON (`presentations/*_manifest.json`)
+- a `.pptx` deck (`presentations/*.pptx`)
+- a `.pdf` export (`presentations/*.pdf`)

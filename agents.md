@@ -8,6 +8,7 @@ Define how Codex and human collaborators produce reproducible, research-grade ou
 - Keep workflows config-driven; avoid hard-coded one-off parameters.
 - Emit or update machine-readable provenance artifacts when running computations.
 - Report what changed, what was validated, and what remains open.
+- For major results or feature additions, generate dissemination artifacts in `presentations/` (`.pptx` and `.pdf`).
 
 ## Documentation-First Rules
 - `docs/` is the primary interface; implementation follows documented contracts.
@@ -25,6 +26,9 @@ Define how Codex and human collaborators produce reproducible, research-grade ou
   - `metrics.json`
   - logs
 - Future tasks must also produce an HTML run report for human inspection.
+- Major milestone reports must include a slide deck pair:
+  - `presentations/<timestamp_or_stage>_<topic>.pptx`
+  - `presentations/<timestamp_or_stage>_<topic>.pdf`
 
 ## Config-Driven Workflow Policy
 - All operational settings must come from `configs/` files (or explicit defaults documented in code/docs).
@@ -35,3 +39,4 @@ Define how Codex and human collaborators produce reproducible, research-grade ou
 - Do not rewrite history of previous runs; append corrections with new run IDs.
 - Keep `progress/` as a living record of decisions, assumptions, and blockers.
 - Flag unresolved scientific ambiguity explicitly; do not hide uncertainty.
+- Keep presentation manifests (`*_manifest.json`) and generated decks versioned for traceability.

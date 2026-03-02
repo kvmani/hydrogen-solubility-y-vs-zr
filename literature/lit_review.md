@@ -19,6 +19,9 @@ This document is the working evidence map for the Y-vs-Zr hydrogen solubility pr
 - **ricca1967_thermodynamic_properties**: *Thermodynamic properties of H and D in alpha-Zr*. DOI: 10.1021/J100870A045  
   Extracts thermodynamic quantities for interstitial hydrogen isotopes in alpha-Zr. Useful for validating enthalpy/entropy trends in the thermodynamic model stage.
 
+- **hall1945_solubility_zr**: *Solubility of hydrogen in zirconium and zirconium-oxygen solid solutions*. DOI: 10.1039/TF9454100306  
+  Classic primary source with isotherm/isobar data and explicit room-temperature saturation values. Useful for anchoring historical Zr-H solubility behavior and oxygen sensitivity context.
+
 - **maeda1993_diffusivity_solubility_y**: *Diffusivity and solubility of H/D in yttrium*. DOI: 10.1039/FT9938904375  
   Key experimental source for hydrogen behavior in Y, including solubility-relevant measurements. Provides the main experimental anchor for alpha-Y-side calibration and comparison.
 
@@ -46,6 +49,9 @@ Where to find TSS-vs-T anchors for modeling: start with `gulbransen1955_alpha_zr
 
 - **ackland1998_zrh_bistable**: *Bistable crystal structure of zirconium hydride*. DOI: 10.1103/PhysRevLett.80.2233  
   Demonstrates structural complexity relevant to hydride stability and embrittlement context. Important for stage-4 hydride competition assumptions.
+
+- **rees1954_interpretation_zr**: *Interpretation of the solubility of hydrogen in zirconium*. DOI: 10.1039/TF9545000343  
+  Provides equation-based interpretation of Zr-H isotherms and phase-region behavior, including reported pressure-temperature relations. Useful for benchmark equation extraction and model sanity checks.
 
 - **carsteanu2005_yh_lattice**: *Lattice distortion in YH2+delta / YH3-eta thin films*. DOI: 10.1016/j.jallcom.2004.09.091  
   Provides structural detail for Y hydrides near non-stoichiometric regimes. Useful context for defining hydride reference states in Y-side thermodynamics.
@@ -120,3 +126,11 @@ Current gap note: direct, systematic dilute-H site-energy studies in pure alpha-
 - Extract numeric TSS-vs-T targets from Section 1+2 sources into a machine-readable table.
 - Build initial consistent DFT protocol to compute dilute-H site energetics in alpha-Y and alpha-Zr.
 - Define explicit equation set for converting DFT energies + vibrational terms into predicted c_H(T,p).
+
+## Machine-Readable Benchmark Outputs (Current)
+- `literature/benchmarks/tss_benchmark_records.csv`: quantitative anchors and equation-based benchmark records with status tags.
+- `literature/benchmarks/provenance_map.md`: per-record traceability to source equation/table/text locations.
+
+Current status note:
+- Initial extracted anchors are committed for both Y and Zr, including equation records and high-confidence text/table values.
+- Direct full TSS/TSSP point-cloud digitization remains flagged as `needs_digitization` for strict curve-level benchmarking.

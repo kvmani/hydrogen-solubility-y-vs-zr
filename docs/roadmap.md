@@ -2,10 +2,11 @@
 
 ## Stage 0: Literature Baseline And Hypothesis Framing
 - Objective: establish credible evidence map and initial hypotheses.
-- Outputs: curated `literature/lit_review.md`, `library.bib`, gap list, testable hypotheses.
+- Outputs: curated `literature/lit_review.md`, `library.bib`, machine-readable benchmark extraction (`literature/benchmarks/`), gap list, testable hypotheses.
 - Gate to Stage 1:
   - Y-H and Zr-H solubility/phase references captured with DOI-backed provenance.
   - Initial quantitative targets defined (temperature range, composition ranges).
+  - Benchmark CSV and provenance map committed.
 
 ## Stage 1: Baseline DFT Validation (Pure Hosts)
 - Objective: validate computational setup for alpha-Y and alpha-Zr hosts.
@@ -48,3 +49,9 @@
 - Completion criteria:
   - End-to-end rerunability from configs and docs.
   - Claim-to-evidence mapping complete and citation-checked.
+
+## Cross-Stage Dissemination Requirement
+- Any major result set or feature addition must produce a discussion-ready deck:
+  - `presentations/<name>.pptx`
+  - `presentations/<name>.pdf`
+- Recommended generator: `tools/presentation/generate_lab_meeting_ppt.py`.

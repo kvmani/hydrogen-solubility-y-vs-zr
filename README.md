@@ -8,6 +8,7 @@ Documentation-first, reproducible research scaffold for building a quantitativel
 - Execution plan and stage gates: `docs/roadmap.md`
 - Local/HPC bootstrap: `docs/getting_started.md`
 - Literature map and bibliography: `literature/lit_review.md`, `literature/library.bib`
+- Machine-readable literature benchmarks: `literature/benchmarks/`
 
 ## Repository Layout
 - `docs/`: roadmap, conventions, data contracts, onboarding
@@ -24,3 +25,4 @@ Documentation-first, reproducible research scaffold for building a quantitativel
 - Every computational run must be config-driven and emit `manifest.json` + `metrics.json`.
 - Factual claims in docs must cite primary sources (DOI or authoritative handbook).
 - Human-readable run reports (HTML) are required for each completed run in later tasks.
+- Major updates must also generate dissemination decks (`.pptx` + `.pdf`) in `presentations/`.

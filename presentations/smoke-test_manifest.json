@@ -1,0 +1,71 @@
+{
+  "deck_title": "Hydrogen Solubility Y vs Zr - Smoke Test",
+  "scan_root": "/Users/anantatamukalaamrutha/python_projects/hydrogen_solubility/results",
+  "created_at_utc": "2026-03-02T14:13:56.928700+00:00",
+  "style": {
+    "font_name": "Arial",
+    "title_font_size_pt": 24,
+    "body_font_size_pt": 18,
+    "bottom_line_font_size_pt": 20,
+    "title_bar_bg": "000000",
+    "title_text_color": "FFFFFF",
+    "bottom_bar_bg": "000000",
+    "bottom_text_color": "FFFFFF",
+    "left_panel_fraction": 0.2
+  },
+  "slides": [
+    {
+      "section": "objective",
+      "title": "Objective and Scope",
+      "bullets": [
+        "State the Y-vs-Zr hydrogen solubility question.",
+        "Define stage scope and assumptions for this run batch.",
+        "Specify quantitative pass/fail targets and evidence sources."
+      ],
+      "figure": null,
+      "bottom_line": "Objective and scope define the decision criteria for this update.",
+      "source_files": []
+    },
+    {
+      "section": "methodology",
+      "title": "Methodology Overview",
+      "bullets": [
+        "Summarize DFT/thermodynamic workflow and run stages.",
+        "List config, convergence, and provenance controls used.",
+        "Describe comparison protocol for Y versus Zr outputs."
+      ],
+      "figure": null,
+      "bottom_line": "Methodology links reproducible inputs to defensible conclusions.",
+      "source_files": []
+    },
+    {
+      "section": "equations",
+      "title": "Core Equations",
+      "bullets": [
+        "Show governing equations and variable definitions.",
+        "Highlight assumptions and thermodynamic reference states.",
+        "Connect equations to extracted metrics and benchmark data."
+      ],
+      "figure": null,
+      "bottom_line": "Equation choices determine interpretation of Y-vs-Zr contrast.",
+      "source_files": []
+    },
+    {
+      "section": "conclusion",
+      "title": "Conclusions and Next Steps",
+      "bullets": [
+        "Summarize strongest quantitative findings from this update.",
+        "State limitations, unresolved uncertainty, and risks.",
+        "List immediate next runs and decisions required."
+      ],
+      "figure": null,
+      "bottom_line": "Results define clear next actions for the roadmap stage gate.",
+      "source_files": []
+    }
+  ],
+  "sources": {
+    "images": [],
+    "json": [],
+    "html": []
+  }
+}

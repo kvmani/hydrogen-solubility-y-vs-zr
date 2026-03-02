@@ -27,9 +27,11 @@ Why does hydrogen exhibit substantially higher solubility in Y than in Zr under 
 - Literature-backed quantitative model for H solubility contrast in Y vs Zr.
 - Comparison plots against experimental/assessed data.
 - Manuscript-ready figures/tables and a methods-complete narrative.
+- For every major result or feature addition: a standardized dissemination deck in `presentations/` as both `.pptx` and `.pdf`.
 
 ## Non-Negotiables
 - No uncited factual claims in mission/docs/literature outputs.
 - No one-off manual runs counted as evidence without machine-readable provenance.
 - No result acceptance without convergence checks and stage-gate criteria.
 - Documentation and code/results must stay synchronized in every substantive task.
+- Major updates are not complete until slide deliverables (`.pptx` + `.pdf`) are generated for lab discussion.

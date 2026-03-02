@@ -6,6 +6,7 @@ Maintain a traceable, high-quality literature evidence base for Y-H and Zr-H sci
 ## Goes In
 - `library.bib`: canonical BibTeX entries (DOI-first)
 - `lit_review.md`: annotated evidence map and gap tracking
+- `benchmarks/`: machine-readable target extractions and provenance maps
 - DOI links, provenance notes, and tags
 
 ## Does NOT Go In
@@ -22,3 +23,4 @@ The literature set defines factual constraints and validates model assumptions f
 3. Tag each source (experiment, phase-diagram, DFT, phonon, thermodynamics).
 4. Record provenance: where data are extracted from (figure/table/equation).
 5. Mark confidence and any unresolved conflicts between sources.
+6. Promote extracted quantitative targets into `benchmarks/tss_benchmark_records.csv`.

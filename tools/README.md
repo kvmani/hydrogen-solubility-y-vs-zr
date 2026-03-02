@@ -16,3 +16,4 @@ Supports reproducible execution while keeping orchestration explicit and reviewa
 
 ## Current Script
 - `validate_config.py`: validates stage-1 YAML/JSON configs against `docs/config_schema.md`.
+- `presentation/`: deck generation pipeline for major update dissemination (`.pptx` + `.pdf`).

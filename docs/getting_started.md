@@ -15,6 +15,7 @@
 - `docs/roadmap.md`
 - `docs/conventions.md`
 - `docs/data_model.md`
+- `literature/benchmarks/README.md`
 
 ## 3) HPC/VASP Overview (Cluster-Agnostic)
 Use the templates in:
@@ -34,7 +35,13 @@ Baseline flow:
 ## 4) First Intended Milestone
 Run Stage 1 host-only convergence tests for alpha-Y and alpha-Zr using identical methodological logic and explicit provenance.
 
-## 5) What Not To Do
+## 5) Dissemination Deck Generation
+For any major result/feature update, generate a discussion deck:
+- `python tools/presentation/generate_lab_meeting_ppt.py --scan-root results --output-dir presentations --deck-title \"Y vs Zr Update\" --require-pdf`
+
+This command creates a manifest, `.pptx`, and `.pdf` (LibreOffice `soffice` required for PDF conversion).
+
+## 6) What Not To Do
 - Do not run undocumented calculations.
 - Do not overwrite old runs; create a new run ID.
 - Do not claim scientific conclusions without source citations and converged evidence.
