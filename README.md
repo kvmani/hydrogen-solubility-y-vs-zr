@@ -7,6 +7,7 @@ Documentation-first, reproducible research scaffold for building a quantitativel
 - Collaboration contract for Codex/humans: `agents.md`
 - Execution plan and stage gates: `docs/roadmap.md`
 - Local/HPC bootstrap: `docs/getting_started.md`
+- Stage-1 campaign guide: `docs/stage1_campaign.md`
 - Slurm/VASP operator tutorial: `hpc/runbook.md`
 - Literature map and bibliography: `literature/lit_review.md`, `literature/library.bib`
 - Machine-readable literature benchmarks: `literature/benchmarks/`
@@ -32,6 +33,8 @@ Documentation-first, reproducible research scaffold for building a quantitativel
 ## Quick Commands
 - Validate configs:
   - `python tools/validate_config.py configs/stage1_y_host_validation_v1.yaml configs/stage1_zr_host_validation_v1.yaml`
+- Generate Stage-1 convergence campaign:
+  - `make plan-stage1`
 - Initialize run folders/artifacts:
   - `python tools/init_run.py configs/stage1_y_host_validation_v1.yaml`
 - Frontend dry-run:

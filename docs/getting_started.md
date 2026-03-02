@@ -16,6 +16,7 @@
 - `docs/conventions.md`
 - `docs/data_model.md`
 - `hpc/runbook.md`
+- `docs/stage1_campaign.md`
 
 ## 3) Baseline HPC Flow (Dry-Run First)
 1. Validate config:
@@ -36,16 +37,22 @@
 Batch orchestration:
 - `tools/hpc/run_vasp_batch.sh --mode dryrun configs/stage1_y_host_validation_v1.yaml configs/stage1_zr_host_validation_v1.yaml`
 
-## 4) First Intended Milestone
+## 4) Stage-1 Campaign Generation
+Generate a full convergence config set (Y + Zr):
+- `make plan-stage1`
+
+Then follow `docs/stage1_campaign.md` to execute dry-run, smoke, and submit in batch.
+
+## 5) First Intended Milestone
 Run Stage-1 host-only validation for alpha-Y and alpha-Zr with matched convergence logic and full provenance.
 
-## 5) Dissemination Deck Generation
+## 6) Dissemination Deck Generation
 For any major result/feature update, generate discussion decks:
 - `python tools/presentation/generate_lab_meeting_ppt.py --scan-root results --output-dir presentations --deck-title "Y vs Zr Update" --require-pdf`
 
 This writes a manifest, `.pptx`, and `.pdf` (LibreOffice `soffice` required for PDF conversion).
 
-## 6) What Not To Do
+## 7) What Not To Do
 - Do not submit real jobs before dry-run and smoke pass.
 - Do not run undocumented one-off calculations.
 - Do not overwrite historical runs; create a new `run_id`.

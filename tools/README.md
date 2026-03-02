@@ -18,6 +18,7 @@ Supports reproducible execution while keeping orchestration explicit and reviewa
 - `validate_config.py`: validates stage-1 YAML/JSON configs against `docs/config_schema.md`.
 - `init_run.py`: creates run folder structure and starter `manifest.json`/`metrics.json` from config.
 - `extract_metrics.py`: parses `raw/OUTCAR` + `raw/OSZICAR` and writes `metrics.json`.
+- `plan_stage1_campaign.py`: generates Stage-1 convergence campaign config sets and plan tables.
 - `presentation/`: deck generation pipeline for major update dissemination (`.pptx` + `.pdf`).
 - `hpc/run_vasp_pipeline.sh`: single-run dryrun/smoke/submit orchestrator.
 - `hpc/run_vasp_batch.sh`: batch launcher for multiple configs.

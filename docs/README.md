@@ -17,3 +17,11 @@ Project control plane: mission execution plan, conventions, data contracts, and 
 
 ## Mission Link
 Ensures every execution step is explicit, reviewable, and reproducible against the scientific goal.
+
+## Key Documents
+- `roadmap.md`
+- `getting_started.md`
+- `conventions.md`
+- `data_model.md`
+- `config_schema.md`
+- `stage1_campaign.md`

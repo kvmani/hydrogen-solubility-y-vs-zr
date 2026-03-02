@@ -11,6 +11,10 @@
 ## Stage 1: Baseline DFT Validation (Pure Hosts)
 - Objective: validate computational setup for alpha-Y and alpha-Zr hosts.
 - Outputs: converged host energies/volumes, k-point and ENCUT convergence records.
+- Required workflow assets:
+  - generated campaign configs and plan table (`tools/plan_stage1_campaign.py`)
+  - dry-run/smoke/submit logs per run
+  - parsed metrics for all accepted points
 - Gate to Stage 2:
   - Convergence thresholds documented and met.
   - Manifest + metrics emitted for all validation runs.

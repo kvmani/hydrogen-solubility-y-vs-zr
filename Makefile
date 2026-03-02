@@ -1,4 +1,4 @@
-.PHONY: lint test docs-check present init-run-y extract-metrics hpc-dryrun-y hpc-smoke-y hpc-submit-y hpc-batch-dryrun
+.PHONY: lint test docs-check present init-run-y extract-metrics hpc-dryrun-y hpc-smoke-y hpc-submit-y hpc-batch-dryrun plan-stage1
 
 RUN_DIR ?= results/runs/20260302_Y_stage1_dft_001
 Y_CONFIG ?= configs/stage1_y_host_validation_v1.yaml
@@ -52,3 +52,11 @@ hpc-submit-y:
 
 hpc-batch-dryrun:
 	@tools/hpc/run_vasp_batch.sh --mode dryrun $(Y_CONFIG) $(ZR_CONFIG)
+
+plan-stage1:
+	@python tools/plan_stage1_campaign.py \
+		--base-config $(Y_CONFIG) \
+		--base-config $(ZR_CONFIG) \
+		--sweeps both \
+		--include-reference \
+		--write-json-plan
