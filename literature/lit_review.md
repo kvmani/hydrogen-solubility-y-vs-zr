@@ -133,4 +133,4 @@ Current gap note: direct, systematic dilute-H site-energy studies in pure alpha-
 
 Current status note:
 - Initial extracted anchors are committed for both Y and Zr, including equation records and high-confidence text/table values.
-- Direct full TSS/TSSP point-cloud digitization remains flagged as `needs_digitization` for strict curve-level benchmarking.
+- Full TSS/TSSP curve datasets are marked `manual_entry_planned` and will be added manually by project owner.

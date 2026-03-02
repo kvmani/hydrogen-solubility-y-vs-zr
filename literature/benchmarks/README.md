@@ -18,11 +18,11 @@ Each row in `tss_benchmark_records.csv` uses:
 - `relationship`: equation text when the record is formula-based.
 - `source_key`, `doi`: reference pointer.
 - `source_location`: equation/table/figure location descriptor.
-- `extraction_method`: `direct_text`, `table_value`, `equation_transcription`, or `manual_digitization_required`.
+- `extraction_method`: `direct_text`, `table_value`, `equation_transcription`, or `manual_entry_planned`.
 - `data_status`: one of:
   - `extracted`: quantitative value directly captured from source text/table.
   - `proxy_non_tss`: useful quantitative anchor but not a strict alpha-phase TSS point.
-  - `needs_digitization`: source identified, numeric point extraction pending figure digitization.
+  - `manual_entry_planned`: source identified, final reference points will be entered manually by project owner.
 
 ## Scope Note
-This first extraction pass prioritizes values/equations recoverable from accessible primary-source text. Direct alpha-phase TSS-vs-T point clouds for Y and Zr still require dedicated figure/table digitization from selected sources.
+This first extraction pass prioritizes values/equations recoverable from accessible primary-source text. Full alpha-phase TSS-vs-T reference curves for Y and Zr will be added manually by project owner in a later step.

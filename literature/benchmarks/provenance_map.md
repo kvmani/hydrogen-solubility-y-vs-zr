@@ -31,6 +31,6 @@
   - Two-phase pressure relation reported: `log10(p0/mmHg) = 5.875 - (5150/T_K)`.
 
 ## y_tss_curve_points_pending, zr_tss_curve_points_pending
-- Status: `needs_digitization`
-- Reason: direct TSS/TSSP point clouds from primary figures/tables require a dedicated digitization pass to avoid transcription error.
-- Planned next step: generate structured point files (`*_tss_points.csv`) with uncertainty columns and per-point source coordinates.
+- Status: `manual_entry_planned`
+- Reason: project owner will manually add finalized reference point sets from selected sources.
+- Planned next step: owner-maintained structured point files (`*_tss_points.csv`) with source coordinates/notes.
