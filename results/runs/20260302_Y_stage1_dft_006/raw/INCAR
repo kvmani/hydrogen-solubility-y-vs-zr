@@ -1,0 +1,18 @@
+SYSTEM = <system>_relax
+ENCUT  = 520
+EDIFF  = 1E-6
+EDIFFG = -0.02
+ISMEAR = 1
+SIGMA  = 0.2
+IBRION = 2
+ISIF   = 3
+NSW    = 200
+PREC   = Accurate
+LREAL  = Auto
+LASPH  = .TRUE.
+LWAVE  = .FALSE.
+LCHARG = .FALSE.
+
+# NOTE:
+# - Tune ISMEAR/SIGMA for metal and keep consistency across compared runs.
+# - Confirm convergence with explicit ENCUT and k-point tests.

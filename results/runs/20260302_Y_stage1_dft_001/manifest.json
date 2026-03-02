@@ -1,0 +1,73 @@
+{
+  "code": {
+    "engine": "VASP",
+    "version": "unknown",
+    "workflow_version": "0.1.0"
+  },
+  "execution_events": [
+    {
+      "event": "pipeline_started",
+      "log_path": "results/runs/20260302_Y_stage1_dft_001/logs/orchestrator/20260302T164402Z_dryrun/pipeline.log",
+      "message": "Pipeline mode=dryrun started.",
+      "mode": "dryrun",
+      "status": "ok",
+      "timestamp_utc": "2026-03-02T16:44:02Z"
+    },
+    {
+      "event": "preflight_ok",
+      "log_path": "results/runs/20260302_Y_stage1_dft_001/logs/orchestrator/20260302T164402Z_dryrun/pipeline.log",
+      "message": "Preflight checks completed.",
+      "mode": "dryrun",
+      "sbatch_script": "results/runs/20260302_Y_stage1_dft_001/logs/slurm/20260302_Y_stage1_dft_001_20260302T164402Z.sbatch",
+      "status": "ok",
+      "timestamp_utc": "2026-03-02T16:44:02Z"
+    },
+    {
+      "event": "dryrun_completed",
+      "log_path": "results/runs/20260302_Y_stage1_dft_001/logs/orchestrator/20260302T164402Z_dryrun/pipeline.log",
+      "message": "Dry-run completed successfully.",
+      "mode": "dryrun",
+      "sbatch_script": "results/runs/20260302_Y_stage1_dft_001/logs/slurm/20260302_Y_stage1_dft_001_20260302T164402Z.sbatch",
+      "status": "ok",
+      "timestamp_utc": "2026-03-02T16:44:02Z"
+    }
+  ],
+  "git": {
+    "commit": "1cc4a9fc8605996eae13558dcaea8e77d6806b7e",
+    "dirty": true
+  },
+  "hpc": {
+    "account": "<account>",
+    "job_id": null,
+    "nodes": 1,
+    "ntasks": 32,
+    "partition": "<partition>",
+    "scheduler": "slurm",
+    "submission": {
+      "pipeline_log": "results/runs/20260302_Y_stage1_dft_001/logs/orchestrator/20260302T164402Z_dryrun/pipeline.log",
+      "sbatch_script": "results/runs/20260302_Y_stage1_dft_001/logs/slurm/20260302_Y_stage1_dft_001_20260302T164402Z.sbatch"
+    },
+    "walltime": "08:00:00"
+  },
+  "inputs": {
+    "config_path": "configs/generated/stage1_campaign_20260302T164353Z/20260302_Y_stage1_dft_001__reference__encut520__k12x12x8.yaml",
+    "encut_eV": 520.0,
+    "functional": "PBE",
+    "kmesh": "12,12,8",
+    "potcar_labels": [
+      "Y_sv"
+    ],
+    "smearing": "ISMEAR=1;SIGMA=0.2"
+  },
+  "last_update_utc": "2026-03-02T16:44:02Z",
+  "objective": "Stage-1 reference host run for alpha-Y: ENCUT=520.0 eV, k-grid 12x12x8.",
+  "paths": {
+    "parsed_dir": "results/runs/20260302_Y_stage1_dft_001/parsed",
+    "raw_dir": "results/runs/20260302_Y_stage1_dft_001/raw",
+    "run_dir": "results/runs/20260302_Y_stage1_dft_001"
+  },
+  "run_id": "20260302_Y_stage1_dft_001",
+  "stage": "stage1",
+  "system": "Y",
+  "timestamp_utc": "2026-03-02T16:44:02Z"
+}

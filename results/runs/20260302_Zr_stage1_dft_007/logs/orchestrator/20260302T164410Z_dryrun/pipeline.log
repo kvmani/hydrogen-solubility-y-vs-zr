@@ -1,0 +1,12 @@
+[2026-03-02T16:44:10Z] [INFO] Pipeline start: mode=dryrun run_id=20260302_Zr_stage1_dft_007 system=Zr
+[2026-03-02T16:44:10Z] [INFO] Repo root: /Users/anantatamukalaamrutha/python_projects/hydrogen_solubility
+[2026-03-02T16:44:10Z] [INFO] Config: /Users/anantatamukalaamrutha/python_projects/hydrogen_solubility/configs/generated/stage1_campaign_20260302T164353Z/20260302_Zr_stage1_dft_007__kpoints__encut520__k10x10x6.yaml
+[2026-03-02T16:44:10Z] [INFO] Run dir: /Users/anantatamukalaamrutha/python_projects/hydrogen_solubility/results/runs/20260302_Zr_stage1_dft_007
+[2026-03-02T16:44:10Z] [INFO] Python: /Library/Frameworks/Python.framework/Versions/3.11/bin/python3
+[2026-03-02T16:44:10Z] [INFO] Git commit: 1cc4a9fc8605996eae13558dcaea8e77d6806b7e
+[2026-03-02T16:44:10Z] [INFO] Git dirty: true
+[2026-03-02T16:44:10Z] [INFO] INCAR copied to run inputs from: /Users/anantatamukalaamrutha/python_projects/hydrogen_solubility/hpc/vasp_templates/INCAR.relax
+[2026-03-02T16:44:10Z] [WARN] Missing input file(s) under /Users/anantatamukalaamrutha/python_projects/hydrogen_solubility/results/runs/20260302_Zr_stage1_dft_007/inputs: POSCAR KPOINTS
+[2026-03-02T16:44:10Z] [INFO] Rendered sbatch script: /Users/anantatamukalaamrutha/python_projects/hydrogen_solubility/results/runs/20260302_Zr_stage1_dft_007/logs/slurm/20260302_Zr_stage1_dft_007_20260302T164410Z.sbatch
+[2026-03-02T16:44:10Z] [INFO] Dry-run complete. No scheduler submission executed.
+[2026-03-02T16:44:10Z] [INFO] Planned submit command: sbatch --export=ALL,HSOL_REPO_ROOT=/Users/anantatamukalaamrutha/python_projects/hydrogen_solubility,HSOL_SUBMIT_DIR=/Users/anantatamukalaamrutha/python_projects/hydrogen_solubility /Users/anantatamukalaamrutha/python_projects/hydrogen_solubility/results/runs/20260302_Zr_stage1_dft_007/logs/slurm/20260302_Zr_stage1_dft_007_20260302T164410Z.sbatch

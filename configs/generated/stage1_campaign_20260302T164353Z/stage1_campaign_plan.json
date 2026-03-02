@@ -1,0 +1,146 @@
+[
+  {
+    "run_id": "20260302_Y_stage1_dft_001",
+    "system": "Y",
+    "sweep_type": "reference",
+    "encut_eV": "520.0",
+    "kpoints_grid": "12x12x8",
+    "source_config": "configs/stage1_y_host_validation_v1.yaml",
+    "config_path": "configs/generated/stage1_campaign_20260302T164353Z/20260302_Y_stage1_dft_001__reference__encut520__k12x12x8.yaml"
+  },
+  {
+    "run_id": "20260302_Y_stage1_dft_002",
+    "system": "Y",
+    "sweep_type": "encut",
+    "encut_eV": "400.0",
+    "kpoints_grid": "12x12x8",
+    "source_config": "configs/stage1_y_host_validation_v1.yaml",
+    "config_path": "configs/generated/stage1_campaign_20260302T164353Z/20260302_Y_stage1_dft_002__encut__encut400__k12x12x8.yaml"
+  },
+  {
+    "run_id": "20260302_Y_stage1_dft_003",
+    "system": "Y",
+    "sweep_type": "encut",
+    "encut_eV": "450.0",
+    "kpoints_grid": "12x12x8",
+    "source_config": "configs/stage1_y_host_validation_v1.yaml",
+    "config_path": "configs/generated/stage1_campaign_20260302T164353Z/20260302_Y_stage1_dft_003__encut__encut450__k12x12x8.yaml"
+  },
+  {
+    "run_id": "20260302_Y_stage1_dft_004",
+    "system": "Y",
+    "sweep_type": "encut",
+    "encut_eV": "520.0",
+    "kpoints_grid": "12x12x8",
+    "source_config": "configs/stage1_y_host_validation_v1.yaml",
+    "config_path": "configs/generated/stage1_campaign_20260302T164353Z/20260302_Y_stage1_dft_004__encut__encut520__k12x12x8.yaml"
+  },
+  {
+    "run_id": "20260302_Y_stage1_dft_005",
+    "system": "Y",
+    "sweep_type": "encut",
+    "encut_eV": "600.0",
+    "kpoints_grid": "12x12x8",
+    "source_config": "configs/stage1_y_host_validation_v1.yaml",
+    "config_path": "configs/generated/stage1_campaign_20260302T164353Z/20260302_Y_stage1_dft_005__encut__encut600__k12x12x8.yaml"
+  },
+  {
+    "run_id": "20260302_Y_stage1_dft_006",
+    "system": "Y",
+    "sweep_type": "kpoints",
+    "encut_eV": "520.0",
+    "kpoints_grid": "8x8x6",
+    "source_config": "configs/stage1_y_host_validation_v1.yaml",
+    "config_path": "configs/generated/stage1_campaign_20260302T164353Z/20260302_Y_stage1_dft_006__kpoints__encut520__k8x8x6.yaml"
+  },
+  {
+    "run_id": "20260302_Y_stage1_dft_007",
+    "system": "Y",
+    "sweep_type": "kpoints",
+    "encut_eV": "520.0",
+    "kpoints_grid": "10x10x6",
+    "source_config": "configs/stage1_y_host_validation_v1.yaml",
+    "config_path": "configs/generated/stage1_campaign_20260302T164353Z/20260302_Y_stage1_dft_007__kpoints__encut520__k10x10x6.yaml"
+  },
+  {
+    "run_id": "20260302_Y_stage1_dft_008",
+    "system": "Y",
+    "sweep_type": "kpoints",
+    "encut_eV": "520.0",
+    "kpoints_grid": "12x12x8",
+    "source_config": "configs/stage1_y_host_validation_v1.yaml",
+    "config_path": "configs/generated/stage1_campaign_20260302T164353Z/20260302_Y_stage1_dft_008__kpoints__encut520__k12x12x8.yaml"
+  },
+  {
+    "run_id": "20260302_Zr_stage1_dft_001",
+    "system": "Zr",
+    "sweep_type": "reference",
+    "encut_eV": "520.0",
+    "kpoints_grid": "12x12x8",
+    "source_config": "configs/stage1_zr_host_validation_v1.yaml",
+    "config_path": "configs/generated/stage1_campaign_20260302T164353Z/20260302_Zr_stage1_dft_001__reference__encut520__k12x12x8.yaml"
+  },
+  {
+    "run_id": "20260302_Zr_stage1_dft_002",
+    "system": "Zr",
+    "sweep_type": "encut",
+    "encut_eV": "400.0",
+    "kpoints_grid": "12x12x8",
+    "source_config": "configs/stage1_zr_host_validation_v1.yaml",
+    "config_path": "configs/generated/stage1_campaign_20260302T164353Z/20260302_Zr_stage1_dft_002__encut__encut400__k12x12x8.yaml"
+  },
+  {
+    "run_id": "20260302_Zr_stage1_dft_003",
+    "system": "Zr",
+    "sweep_type": "encut",
+    "encut_eV": "450.0",
+    "kpoints_grid": "12x12x8",
+    "source_config": "configs/stage1_zr_host_validation_v1.yaml",
+    "config_path": "configs/generated/stage1_campaign_20260302T164353Z/20260302_Zr_stage1_dft_003__encut__encut450__k12x12x8.yaml"
+  },
+  {
+    "run_id": "20260302_Zr_stage1_dft_004",
+    "system": "Zr",
+    "sweep_type": "encut",
+    "encut_eV": "520.0",
+    "kpoints_grid": "12x12x8",
+    "source_config": "configs/stage1_zr_host_validation_v1.yaml",
+    "config_path": "configs/generated/stage1_campaign_20260302T164353Z/20260302_Zr_stage1_dft_004__encut__encut520__k12x12x8.yaml"
+  },
+  {
+    "run_id": "20260302_Zr_stage1_dft_005",
+    "system": "Zr",
+    "sweep_type": "encut",
+    "encut_eV": "600.0",
+    "kpoints_grid": "12x12x8",
+    "source_config": "configs/stage1_zr_host_validation_v1.yaml",
+    "config_path": "configs/generated/stage1_campaign_20260302T164353Z/20260302_Zr_stage1_dft_005__encut__encut600__k12x12x8.yaml"
+  },
+  {
+    "run_id": "20260302_Zr_stage1_dft_006",
+    "system": "Zr",
+    "sweep_type": "kpoints",
+    "encut_eV": "520.0",
+    "kpoints_grid": "8x8x6",
+    "source_config": "configs/stage1_zr_host_validation_v1.yaml",
+    "config_path": "configs/generated/stage1_campaign_20260302T164353Z/20260302_Zr_stage1_dft_006__kpoints__encut520__k8x8x6.yaml"
+  },
+  {
+    "run_id": "20260302_Zr_stage1_dft_007",
+    "system": "Zr",
+    "sweep_type": "kpoints",
+    "encut_eV": "520.0",
+    "kpoints_grid": "10x10x6",
+    "source_config": "configs/stage1_zr_host_validation_v1.yaml",
+    "config_path": "configs/generated/stage1_campaign_20260302T164353Z/20260302_Zr_stage1_dft_007__kpoints__encut520__k10x10x6.yaml"
+  },
+  {
+    "run_id": "20260302_Zr_stage1_dft_008",
+    "system": "Zr",
+    "sweep_type": "kpoints",
+    "encut_eV": "520.0",
+    "kpoints_grid": "12x12x8",
+    "source_config": "configs/stage1_zr_host_validation_v1.yaml",
+    "config_path": "configs/generated/stage1_campaign_20260302T164353Z/20260302_Zr_stage1_dft_008__kpoints__encut520__k12x12x8.yaml"
+  }
+]

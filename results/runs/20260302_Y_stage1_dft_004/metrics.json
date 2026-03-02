@@ -1,0 +1,22 @@
+{
+  "artifacts": {
+    "oszicar": "raw/OSZICAR",
+    "outcar": "raw/OUTCAR",
+    "summary_table": "parsed/summary.csv"
+  },
+  "checks": {
+    "electronic_converged": null,
+    "encut_converged": null,
+    "ionic_converged": null,
+    "kmesh_converged": null
+  },
+  "energetics": {
+    "energy_per_atom_eV": null,
+    "formation_energy_eV": null,
+    "h_solution_energy_eV": null,
+    "total_energy_eV": null
+  },
+  "notes": "Initialized by tools/init_run.py",
+  "run_id": "20260302_Y_stage1_dft_004",
+  "status": "initialized"
+}
