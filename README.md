@@ -9,6 +9,7 @@ Documentation-first, reproducible research scaffold for building a quantitativel
 - Local/HPC bootstrap: `docs/getting_started.md`
 - Stage-1 campaign guide: `docs/stage1_campaign.md`
 - Beginner VASP tutorial: `hpc/beginner_vasp_tutorial.md`
+- Module discovery tutorial: `hpc/vasp_module_discovery_tutorial.md`
 - Slurm/VASP operator tutorial: `hpc/runbook.md`
 - Literature map and bibliography: `literature/lit_review.md`, `literature/library.bib`
 - Machine-readable literature benchmarks: `literature/benchmarks/`
@@ -38,6 +39,8 @@ Documentation-first, reproducible research scaffold for building a quantitativel
   - `make plan-stage1`
 - Initialize run folders/artifacts:
   - `python tools/init_run.py configs/stage1_y_host_validation_v1.yaml`
+- Discover candidate VASP modules:
+  - `tools/hpc/discover_vasp_modules.sh --keyword vasp`
 - VASP health check (quick):
   - `tools/hpc/check_vasp_installation.sh --module <compiler_module> --module <mpi_module> --module <vasp_module>`
 - VASP health check (smoke):

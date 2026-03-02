@@ -16,23 +16,26 @@
 - `docs/conventions.md`
 - `docs/data_model.md`
 - `hpc/beginner_vasp_tutorial.md`
+- `hpc/vasp_module_discovery_tutorial.md`
 - `hpc/runbook.md`
 - `docs/stage1_campaign.md`
 
 ## 3) Baseline HPC Flow (Dry-Run First)
-1. Validate config:
+1. Discover module names (if unknown):
+   - `tools/hpc/discover_vasp_modules.sh --keyword vasp`
+2. Validate config:
    - `python tools/validate_config.py configs/stage1_y_host_validation_v1.yaml`
-2. Initialize run folder:
+3. Initialize run folder:
    - `python tools/init_run.py configs/stage1_y_host_validation_v1.yaml`
-3. Place inputs in `results/runs/<run_id>/inputs/`:
+4. Place inputs in `results/runs/<run_id>/inputs/`:
    - `POSCAR`, `KPOINTS`, `INCAR`, `POTCAR`
-4. Frontend dry-run (no submission):
+5. Frontend dry-run (no submission):
    - `tools/hpc/run_vasp_pipeline.sh --mode dryrun --config configs/stage1_y_host_validation_v1.yaml`
-5. Frontend smoke checks:
+6. Frontend smoke checks:
    - `tools/hpc/run_vasp_pipeline.sh --mode smoke --config configs/stage1_y_host_validation_v1.yaml --compiler-module <compiler_module> --mpi-module <mpi_module> --vasp-module <vasp_module>`
-6. Real submit:
+7. Real submit:
    - `tools/hpc/run_vasp_pipeline.sh --mode submit --config configs/stage1_y_host_validation_v1.yaml --compiler-module <compiler_module> --mpi-module <mpi_module> --vasp-module <vasp_module> --require-potcar true`
-7. Parse outputs after completion:
+8. Parse outputs after completion:
    - `python tools/extract_metrics.py --run-dir results/runs/<run_id>`
 
 Batch orchestration:

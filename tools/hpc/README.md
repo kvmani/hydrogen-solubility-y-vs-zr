@@ -4,6 +4,7 @@
 Provide robust, scriptable orchestration for VASP workflows on Slurm with dry-run-first safety and rich diagnostics.
 
 ## Goes In
+- `discover_vasp_modules.sh`: module and binary discovery report generator
 - `check_vasp_installation.sh`: frontend-node VASP availability + smoke validator
 - `run_vasp_pipeline.sh`: single-config orchestrator (`dryrun`, `smoke`, `submit`)
 - `run_vasp_batch.sh`: batch launcher across multiple configs

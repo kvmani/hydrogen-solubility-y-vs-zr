@@ -9,6 +9,8 @@ This tutorial is written for first-time VASP users and follows this project’s 
 - Read access to pseudopotentials (POTCAR source).
 - Basic terminal usage and Slurm commands (`squeue`, `sbatch`, `sacct`).
 
+If you do not know module names yet, do this first: `hpc/vasp_module_discovery_tutorial.md`.
+
 ## 1) Understand the 4 Core VASP Inputs
 - `POSCAR`: crystal structure and atomic positions.
 - `POTCAR`: pseudopotential data for each element in POSCAR order.
@@ -17,7 +19,16 @@ This tutorial is written for first-time VASP users and follows this project’s 
 
 If one is missing or inconsistent, the run fails.
 
-## 2) Verify VASP Is Installed (Quick Check)
+## 2) Discover VASP Modules (if module names are unknown)
+Run on frontend/login node:
+
+```bash
+tools/hpc/discover_vasp_modules.sh --keyword vasp
+```
+
+Then inspect the generated report and pick candidate module triplets (compiler/MPI/VASP).
+
+## 3) Verify VASP Is Installed (Quick Check)
 Run on frontend/login node:
 
 ```bash
@@ -34,7 +45,7 @@ What this checks:
 - shared libraries are resolved (via `ldd`/`otool`)
 - optional `--version` probe
 
-## 3) Optional Tiny Smoke Run (Best Confidence)
+## 4) Optional Tiny Smoke Run (Best Confidence)
 Use a minimal static test to ensure VASP actually executes.
 
 ```bash
@@ -52,7 +63,7 @@ Notes:
 - POTCAR must match the test element used by the script (Al).
 - If login-node execution is blocked on your cluster, run this in an interactive Slurm allocation.
 
-## 4) Project Workflow (Dry-Run First)
+## 5) Project Workflow (Dry-Run First)
 After VASP environment is healthy, use the project pipeline.
 
 ### 4.1 Generate Stage-1 campaign configs
@@ -93,13 +104,13 @@ tools/hpc/run_vasp_batch.sh \
   configs/generated/<campaign_dir>/*.yaml
 ```
 
-## 5) Monitor Jobs
+## 6) Monitor Jobs
 - Queue state:
   - `squeue -u $USER`
 - Historical status:
   - `sacct -j <job_id> --format=JobID,State,Elapsed,ExitCode`
 
-## 6) Where to Look When Something Fails
+## 7) Where to Look When Something Fails
 Check in this order:
 1. `results/runs/<run_id>/logs/orchestrator/<timestamp>_<mode>/pipeline.log`
 2. `results/runs/<run_id>/logs/slurm/slurm-<jobid>.err`
@@ -107,17 +118,18 @@ Check in this order:
 4. `results/runs/<run_id>/raw/OUTCAR`
 5. `results/runs/<run_id>/manifest.json` (`execution_events` timeline)
 
-## 7) First-Time Mistakes to Avoid
+## 8) First-Time Mistakes to Avoid
 - Submitting before dry-run and smoke checks.
 - Using placeholder `partition`/`account` values in config.
 - POTCAR order not matching POSCAR species order.
 - Comparing Y vs Zr runs with different convergence settings.
 
-## 8) Minimal Safe Starter Sequence
+## 9) Minimal Safe Starter Sequence
 If you do nothing else, run this order:
-1. `tools/hpc/check_vasp_installation.sh ...` (quick check)
-2. `tools/hpc/check_vasp_installation.sh --run-smoke true ...` (optional but recommended)
-3. `make plan-stage1`
-4. batch `dryrun`
-5. batch `smoke`
-6. batch `submit`
+1. `tools/hpc/discover_vasp_modules.sh --keyword vasp` (find module names)
+2. `tools/hpc/check_vasp_installation.sh ...` (quick check)
+3. `tools/hpc/check_vasp_installation.sh --run-smoke true ...` (optional but recommended)
+4. `make plan-stage1`
+5. batch `dryrun`
+6. batch `smoke`
+7. batch `submit`

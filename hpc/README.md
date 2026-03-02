@@ -8,6 +8,7 @@ Provide cluster-agnostic templates and operational runbooks for reproducible VAS
 - VASP input templates: `vasp_templates/`
 - Operator guidance: `runbook.md`
 - Beginner onboarding tutorial: `beginner_vasp_tutorial.md`
+- Module discovery tutorial: `vasp_module_discovery_tutorial.md`
 
 ## Does NOT Go In
 - Cluster credentials or private account details

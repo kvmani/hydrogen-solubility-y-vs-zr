@@ -20,6 +20,7 @@ Supports reproducible execution while keeping orchestration explicit and reviewa
 - `extract_metrics.py`: parses `raw/OUTCAR` + `raw/OSZICAR` and writes `metrics.json`.
 - `plan_stage1_campaign.py`: generates Stage-1 convergence campaign config sets and plan tables.
 - `presentation/`: deck generation pipeline for major update dissemination (`.pptx` + `.pdf`).
+- `hpc/discover_vasp_modules.sh`: discovers candidate VASP modules and resolved binaries on your HPC.
 - `hpc/check_vasp_installation.sh`: quick + smoke checks for VASP availability and execution health.
 - `hpc/run_vasp_pipeline.sh`: single-run dryrun/smoke/submit orchestrator.
 - `hpc/run_vasp_batch.sh`: batch launcher for multiple configs.
