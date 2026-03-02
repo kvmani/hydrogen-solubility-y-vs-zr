@@ -15,6 +15,7 @@
 - `docs/roadmap.md`
 - `docs/conventions.md`
 - `docs/data_model.md`
+- `hpc/beginner_vasp_tutorial.md`
 - `hpc/runbook.md`
 - `docs/stage1_campaign.md`
 

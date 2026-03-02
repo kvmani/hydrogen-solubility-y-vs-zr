@@ -25,3 +25,4 @@ Ensures every execution step is explicit, reviewable, and reproducible against t
 - `data_model.md`
 - `config_schema.md`
 - `stage1_campaign.md`
+- `../hpc/beginner_vasp_tutorial.md`

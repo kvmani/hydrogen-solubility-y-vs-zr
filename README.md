@@ -8,6 +8,7 @@ Documentation-first, reproducible research scaffold for building a quantitativel
 - Execution plan and stage gates: `docs/roadmap.md`
 - Local/HPC bootstrap: `docs/getting_started.md`
 - Stage-1 campaign guide: `docs/stage1_campaign.md`
+- Beginner VASP tutorial: `hpc/beginner_vasp_tutorial.md`
 - Slurm/VASP operator tutorial: `hpc/runbook.md`
 - Literature map and bibliography: `literature/lit_review.md`, `literature/library.bib`
 - Machine-readable literature benchmarks: `literature/benchmarks/`
@@ -37,6 +38,10 @@ Documentation-first, reproducible research scaffold for building a quantitativel
   - `make plan-stage1`
 - Initialize run folders/artifacts:
   - `python tools/init_run.py configs/stage1_y_host_validation_v1.yaml`
+- VASP health check (quick):
+  - `tools/hpc/check_vasp_installation.sh --module <compiler_module> --module <mpi_module> --module <vasp_module>`
+- VASP health check (smoke):
+  - `tools/hpc/check_vasp_installation.sh --module <compiler_module> --module <mpi_module> --module <vasp_module> --run-smoke true --potcar /path/to/POTCAR --launch-cmd "srun -n 1"`
 - Frontend dry-run:
   - `tools/hpc/run_vasp_pipeline.sh --mode dryrun --config configs/stage1_y_host_validation_v1.yaml`
 - Frontend smoke test:

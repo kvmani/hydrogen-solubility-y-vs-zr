@@ -2,6 +2,9 @@
 
 This runbook is cluster-agnostic and assumes VASP execution on an HPC using Slurm.
 
+## 0) New To VASP?
+Start with `hpc/beginner_vasp_tutorial.md` first, then come back to this operator runbook.
+
 ## 1) Prerequisites
 - You have a validated stage config in `configs/`.
 - You have read access to VASP executable and pseudopotentials on your cluster.
@@ -14,11 +17,14 @@ Core scripts:
 - `tools/hpc/submit_vasp_job.sh`
 
 ## 2) One-Time Setup (Local or Frontend Node)
-1. Install Python deps:
+1. Verify VASP environment first:
+   - `tools/hpc/check_vasp_installation.sh --module <compiler_module> --module <mpi_module> --module <vasp_module>`
+   - optional smoke: `tools/hpc/check_vasp_installation.sh --module <compiler_module> --module <mpi_module> --module <vasp_module> --run-smoke true --potcar /path/to/POTCAR --launch-cmd "srun -n 1"`
+2. Install Python deps:
    - `pip install -r requirements.txt`
-2. Validate baseline configs:
+3. Validate baseline configs:
    - `python tools/validate_config.py configs/stage1_y_host_validation_v1.yaml configs/stage1_zr_host_validation_v1.yaml`
-3. Edit config placeholders before real submission:
+4. Edit config placeholders before real submission:
    - replace `hpc.partition: "<partition>"`
    - replace `hpc.account: "<account>"`
 
