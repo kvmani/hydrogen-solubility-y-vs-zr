@@ -2,6 +2,8 @@
 
 This project requires machine-readable outputs per run. Two JSON files are mandatory from the start.
 
+Config inputs for these outputs are validated against `docs/config_schema.md`.
+
 ## 1) `manifest.json` (Provenance + Context)
 
 Minimal schema:

@@ -30,6 +30,7 @@ Required subpaths/files (baseline contract):
 - Store config files in `configs/`.
 - Use explicit, versioned names, e.g., `stage2_y_dilute_h_v1.yaml`.
 - No hidden defaults without docs mention.
+- Validate every config against `docs/config_schema.md` before submission.
 
 ## Metadata And Provenance Expectations
 `manifest.json` must include:

@@ -16,8 +16,12 @@ Python package for config resolution, run manifest writing, metrics extraction, 
 Implements the reproducibility contracts defined in `docs/data_model.md` and `docs/conventions.md`.
 
 ## Status
-Placeholder only. Future tasks will implement:
-1. config loading/validation
-2. manifest writing
-3. metrics extraction
-4. report generation
+Baseline implementation in place:
+1. stage-1 config loading/validation (`config_models.py`)
+2. manifest writing (`pipeline.write_manifest`)
+3. metrics writing (`pipeline.write_metrics`)
+
+Future tasks will implement:
+1. parser-backed metrics extraction from VASP outputs
+2. deterministic HTML report generation
+3. stage 2+ schemas and orchestration logic

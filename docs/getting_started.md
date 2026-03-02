@@ -23,11 +23,13 @@ Use the templates in:
 
 Baseline flow:
 1. Choose a stage and create/update a config in `configs/`.
-2. Prepare VASP inputs (POSCAR, POTCAR, KPOINTS, INCAR template copy).
-3. Create a run directory under `results/runs/<run_id>/inputs/`.
-4. Submit with a SLURM template adapted to your environment.
-5. Archive scheduler logs and raw outputs into run folders.
-6. Write `manifest.json` + `metrics.json`.
+2. Validate config syntax + schema:
+   - `python tools/validate_config.py <config-file>`
+3. Prepare VASP inputs (POSCAR, POTCAR, KPOINTS, INCAR template copy).
+4. Create a run directory under `results/runs/<run_id>/inputs/`.
+5. Submit with a SLURM template adapted to your environment.
+6. Archive scheduler logs and raw outputs into run folders.
+7. Write `manifest.json` + `metrics.json`.
 
 ## 4) First Intended Milestone
 Run Stage 1 host-only convergence tests for alpha-Y and alpha-Zr using identical methodological logic and explicit provenance.

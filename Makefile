@@ -4,7 +4,11 @@ lint:
 	@echo "TODO: add lint pipeline (e.g., ruff + markdownlint)."
 
 test:
-	@echo "TODO: add unit/integration tests."
+	@python tools/validate_config.py \
+		configs/stage1_y_host_validation_v1.yaml \
+		configs/stage1_zr_host_validation_v1.yaml
 
 docs-check:
-	@echo "TODO: add docs consistency checks (links, required sections, citation policy)."
+	@python tools/validate_config.py \
+		configs/stage1_y_host_validation_v1.yaml \
+		configs/stage1_zr_host_validation_v1.yaml

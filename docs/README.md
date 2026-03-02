@@ -7,6 +7,7 @@ Project control plane: mission execution plan, conventions, data contracts, and 
 - Roadmaps and stage gates
 - Conventions and naming standards
 - Output schemas/contracts
+- Config schemas/contracts
 - Contributor runbooks and setup notes
 
 ## Does NOT Go In
