@@ -1,0 +1,18 @@
+# docs/
+
+## Purpose
+Project control plane: mission execution plan, conventions, data contracts, and onboarding instructions.
+
+## Goes In
+- Roadmaps and stage gates
+- Conventions and naming standards
+- Output schemas/contracts
+- Contributor runbooks and setup notes
+
+## Does NOT Go In
+- Raw results or run logs
+- Ad hoc scratch notes that are not actionable
+- Code implementation details better placed in `src/`
+
+## Mission Link
+Ensures every execution step is explicit, reviewable, and reproducible against the scientific goal.
