@@ -1,4 +1,4 @@
-.PHONY: lint test docs-check present
+.PHONY: lint test docs-check present init-run-y
 
 lint:
 	@echo "TODO: add lint pipeline (e.g., ruff + markdownlint)."
@@ -20,3 +20,6 @@ present:
 		--deck-title "Y vs Zr Hydrogen Solubility - Major Update" \
 		--basename major-update \
 		--max-results 10
+
+init-run-y:
+	@python tools/init_run.py configs/stage1_y_host_validation_v1.yaml

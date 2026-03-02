@@ -87,3 +87,9 @@ For major result sets/feature additions, generate and version:
 - a deck manifest JSON (`presentations/*_manifest.json`)
 - a `.pptx` deck (`presentations/*.pptx`)
 - a `.pdf` export (`presentations/*.pdf`)
+
+## Bootstrap Status Convention
+When a run is initialized via `tools/init_run.py`, starter metrics should use:
+- `status: "initialized"`
+
+This status must be replaced with execution outcomes (e.g., `success`, `failed`) after parsing real VASP outputs.

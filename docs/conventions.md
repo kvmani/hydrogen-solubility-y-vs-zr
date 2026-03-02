@@ -17,6 +17,9 @@ Field rules:
 Each run lives at:
 `results/runs/<run_id>/`
 
+Bootstrap command:
+`python tools/init_run.py <config-file>`
+
 Required subpaths/files (baseline contract):
 - `inputs/` snapshot of INCAR/KPOINTS/POSCAR/POTCAR metadata and config
 - `logs/` scheduler + code logs
