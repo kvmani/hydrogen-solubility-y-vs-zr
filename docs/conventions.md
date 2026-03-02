@@ -29,6 +29,9 @@ Required subpaths/files (baseline contract):
 - `metrics.json`
 - `report.html` (required in later tasks)
 
+Metrics parser command:
+`python tools/extract_metrics.py --run-dir results/runs/<run_id>`
+
 ## Config Convention
 - Store config files in `configs/`.
 - Use explicit, versioned names, e.g., `stage2_y_dilute_h_v1.yaml`.

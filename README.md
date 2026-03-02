@@ -30,4 +30,5 @@ Documentation-first, reproducible research scaffold for building a quantitativel
 ## Quick Commands
 - Validate configs: `python tools/validate_config.py configs/stage1_y_host_validation_v1.yaml configs/stage1_zr_host_validation_v1.yaml`
 - Initialize run folders/artifacts: `python tools/init_run.py configs/stage1_y_host_validation_v1.yaml`
+- Parse VASP outputs to metrics: `python tools/extract_metrics.py --run-dir results/runs/<run_id>`
 - Generate update deck: `python tools/presentation/generate_lab_meeting_ppt.py --scan-root results --output-dir presentations --deck-title "Y vs Zr Update" --require-pdf`

@@ -21,6 +21,7 @@ Baseline implementation in place:
 2. manifest writing (`pipeline.write_manifest`)
 3. metrics writing (`pipeline.write_metrics`)
 4. run bootstrap from config (`run_bootstrap.init_run_from_config`)
+5. VASP output parsing into stage-1 metrics (`vasp_metrics.py`)
 
 Future tasks will implement:
 1. parser-backed metrics extraction from VASP outputs

@@ -56,7 +56,8 @@ Minimal schema:
     "total_energy_eV": -123.456,
     "energy_per_atom_eV": -6.1728,
     "formation_energy_eV": null,
-    "h_solution_energy_eV": null
+    "h_solution_energy_eV": null,
+    "oszicar_final_e0_eV": -123.200
   },
   "checks": {
     "electronic_converged": true,
@@ -72,6 +73,9 @@ Minimal schema:
   "notes": "placeholder"
 }
 ```
+
+Extraction note:
+- `tools/extract_metrics.py` populates this structure from `raw/OUTCAR` and `raw/OSZICAR`.
 
 ## Human Report Requirement (Future Stages)
 Each run will also require a concise human-readable `report.html` summarizing:
@@ -93,3 +97,5 @@ When a run is initialized via `tools/init_run.py`, starter metrics should use:
 - `status: "initialized"`
 
 This status must be replaced with execution outcomes (e.g., `success`, `failed`) after parsing real VASP outputs.
+
+Parser may also emit `status: "partial"` when energies are available but convergence cannot be fully confirmed.

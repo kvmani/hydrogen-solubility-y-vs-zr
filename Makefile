@@ -1,4 +1,6 @@
-.PHONY: lint test docs-check present init-run-y
+.PHONY: lint test docs-check present init-run-y extract-metrics
+
+RUN_DIR ?= results/runs/20260302_Y_stage1_dft_001
 
 lint:
 	@echo "TODO: add lint pipeline (e.g., ruff + markdownlint)."
@@ -23,3 +25,6 @@ present:
 
 init-run-y:
 	@python tools/init_run.py configs/stage1_y_host_validation_v1.yaml
+
+extract-metrics:
+	@python tools/extract_metrics.py --run-dir $(RUN_DIR)

@@ -31,7 +31,9 @@ Baseline flow:
 4. Prepare VASP inputs (POSCAR, POTCAR, KPOINTS, INCAR template copy) in run `inputs/`.
 5. Submit with a SLURM template adapted to your environment.
 6. Archive scheduler logs and raw outputs into run folders.
-7. Update `manifest.json` + `metrics.json` with real run metadata/results.
+7. Parse outputs into metrics:
+   - `python tools/extract_metrics.py --run-dir results/runs/<run_id>`
+8. Update `manifest.json` with real scheduler/job metadata and any run notes.
 
 ## 4) First Intended Milestone
 Run Stage 1 host-only convergence tests for alpha-Y and alpha-Zr using identical methodological logic and explicit provenance.
