@@ -24,6 +24,7 @@ Why does hydrogen exhibit substantially higher solubility in Y than in Zr under 
 
 ## Deliverables
 - Reproducible input decks, configs, manifests, and metrics for each run stage.
+- Dry-run, smoke-test, and submission logs with root-cause-friendly diagnostics for each executed workflow.
 - Literature-backed quantitative model for H solubility contrast in Y vs Zr.
 - Comparison plots against experimental/assessed data.
 - Manuscript-ready figures/tables and a methods-complete narrative.
@@ -35,3 +36,5 @@ Why does hydrogen exhibit substantially higher solubility in Y than in Zr under 
 - No result acceptance without convergence checks and stage-gate criteria.
 - Documentation and code/results must stay synchronized in every substantive task.
 - Major updates are not complete until slide deliverables (`.pptx` + `.pdf`) are generated for lab discussion.
+- Slurm workflows must pass frontend `dryrun` and `smoke` checks before real submission.
+- Each orchestration attempt must emit session logs and update manifest execution events.

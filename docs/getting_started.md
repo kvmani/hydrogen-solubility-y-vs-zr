@@ -4,7 +4,7 @@
 1. Create and activate a Python environment.
 2. Install dependencies:
    - `pip install -r requirements.txt`
-3. Confirm baseline targets:
+3. Run baseline checks:
    - `make lint`
    - `make test`
    - `make docs-check`
@@ -15,36 +15,38 @@
 - `docs/roadmap.md`
 - `docs/conventions.md`
 - `docs/data_model.md`
-- `literature/benchmarks/README.md`
+- `hpc/runbook.md`
 
-## 3) HPC/VASP Overview (Cluster-Agnostic)
-Use the templates in:
-- `hpc/slurm_templates/`
-- `hpc/vasp_templates/`
-
-Baseline flow:
-1. Choose a stage and create/update a config in `configs/`.
-2. Validate config syntax + schema:
-   - `python tools/validate_config.py <config-file>`
-3. Initialize run directory + starter artifacts:
-   - `python tools/init_run.py <config-file>`
-4. Prepare VASP inputs (POSCAR, POTCAR, KPOINTS, INCAR template copy) in run `inputs/`.
-5. Submit with a SLURM template adapted to your environment.
-6. Archive scheduler logs and raw outputs into run folders.
-7. Parse outputs into metrics:
+## 3) Baseline HPC Flow (Dry-Run First)
+1. Validate config:
+   - `python tools/validate_config.py configs/stage1_y_host_validation_v1.yaml`
+2. Initialize run folder:
+   - `python tools/init_run.py configs/stage1_y_host_validation_v1.yaml`
+3. Place inputs in `results/runs/<run_id>/inputs/`:
+   - `POSCAR`, `KPOINTS`, `INCAR`, `POTCAR`
+4. Frontend dry-run (no submission):
+   - `tools/hpc/run_vasp_pipeline.sh --mode dryrun --config configs/stage1_y_host_validation_v1.yaml`
+5. Frontend smoke checks:
+   - `tools/hpc/run_vasp_pipeline.sh --mode smoke --config configs/stage1_y_host_validation_v1.yaml --compiler-module <compiler_module> --mpi-module <mpi_module> --vasp-module <vasp_module>`
+6. Real submit:
+   - `tools/hpc/run_vasp_pipeline.sh --mode submit --config configs/stage1_y_host_validation_v1.yaml --compiler-module <compiler_module> --mpi-module <mpi_module> --vasp-module <vasp_module> --require-potcar true`
+7. Parse outputs after completion:
    - `python tools/extract_metrics.py --run-dir results/runs/<run_id>`
-8. Update `manifest.json` with real scheduler/job metadata and any run notes.
+
+Batch orchestration:
+- `tools/hpc/run_vasp_batch.sh --mode dryrun configs/stage1_y_host_validation_v1.yaml configs/stage1_zr_host_validation_v1.yaml`
 
 ## 4) First Intended Milestone
-Run Stage 1 host-only convergence tests for alpha-Y and alpha-Zr using identical methodological logic and explicit provenance.
+Run Stage-1 host-only validation for alpha-Y and alpha-Zr with matched convergence logic and full provenance.
 
 ## 5) Dissemination Deck Generation
-For any major result/feature update, generate a discussion deck:
-- `python tools/presentation/generate_lab_meeting_ppt.py --scan-root results --output-dir presentations --deck-title \"Y vs Zr Update\" --require-pdf`
+For any major result/feature update, generate discussion decks:
+- `python tools/presentation/generate_lab_meeting_ppt.py --scan-root results --output-dir presentations --deck-title "Y vs Zr Update" --require-pdf`
 
-This command creates a manifest, `.pptx`, and `.pdf` (LibreOffice `soffice` required for PDF conversion).
+This writes a manifest, `.pptx`, and `.pdf` (LibreOffice `soffice` required for PDF conversion).
 
 ## 6) What Not To Do
-- Do not run undocumented calculations.
-- Do not overwrite old runs; create a new run ID.
-- Do not claim scientific conclusions without source citations and converged evidence.
+- Do not submit real jobs before dry-run and smoke pass.
+- Do not run undocumented one-off calculations.
+- Do not overwrite historical runs; create a new `run_id`.
+- Do not claim conclusions without converged evidence and primary citations.

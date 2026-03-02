@@ -1,17 +1,22 @@
 # hpc/
 
 ## Purpose
-Provide cluster-agnostic run templates and checklists for beginner-friendly VASP execution with reproducible records.
+Provide cluster-agnostic templates and operational runbooks for reproducible VASP execution on Slurm.
 
 ## Goes In
-- Scheduler templates (`slurm_templates/`)
-- VASP input templates (`vasp_templates/`)
-- Execution/checklist documentation (`runbook.md`)
+- Scheduler templates: `slurm_templates/`
+- VASP input templates: `vasp_templates/`
+- Operator guidance: `runbook.md`
 
 ## Does NOT Go In
-- Cluster secrets or personal account details
+- Cluster credentials or private account details
 - Raw simulation outputs (store under `results/`)
-- One-off scripts that bypass config/provenance rules
+- Ad hoc scripts that bypass config + manifest contracts
 
 ## Mission Link
-Makes computational execution systematic and repeatable so scientific claims can be audited.
+Defines the execution contract that turns documented methodology into auditable compute runs with dry-run-first safety.
+
+## Related Orchestration Tools
+- `tools/hpc/run_vasp_pipeline.sh`
+- `tools/hpc/run_vasp_batch.sh`
+- `tools/hpc/submit_vasp_job.sh`

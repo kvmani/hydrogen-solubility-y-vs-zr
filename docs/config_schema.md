@@ -35,6 +35,10 @@ This document defines the first enforced config contract for host-only Stage-1 r
   - `Y*` for `system=Y`
   - `Zr*` for `system=Zr`
 
+## Operational Note For Slurm Submission
+- Placeholder strings such as `<partition>` and `<account>` are accepted by schema validation but are intentionally blocked in submit mode by `tools/hpc/run_vasp_pipeline.sh`.
+- Replace them with real cluster values before `--mode submit`.
+
 ## Starter Configs
 - `configs/stage1_y_host_validation_v1.yaml`
 - `configs/stage1_zr_host_validation_v1.yaml`

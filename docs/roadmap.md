@@ -14,6 +14,7 @@
 - Gate to Stage 2:
   - Convergence thresholds documented and met.
   - Manifest + metrics emitted for all validation runs.
+  - Frontend dry-run and smoke checks archived for each submitted workflow.
 
 ## Stage 2: H Interstitial Energetics
 - Objective: compute dilute-H solution energies and site preference (T/O and any symmetry-distinct sites).
@@ -49,6 +50,13 @@
 - Completion criteria:
   - End-to-end rerunability from configs and docs.
   - Claim-to-evidence mapping complete and citation-checked.
+
+## Cross-Stage Execution Requirement
+- Slurm runs must follow ordered workflow:
+  1. `dryrun`
+  2. `smoke`
+  3. `submit`
+- Each step must emit logs and manifest execution events.
 
 ## Cross-Stage Dissemination Requirement
 - Any major result set or feature addition must produce a discussion-ready deck:

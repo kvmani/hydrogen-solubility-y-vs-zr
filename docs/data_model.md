@@ -35,13 +35,30 @@ Minimal schema:
     "job_id": "<id>",
     "nodes": 1,
     "ntasks": 32,
-    "walltime": "08:00:00"
+    "walltime": "08:00:00",
+    "submission": {
+      "sbatch_script": "results/runs/<run_id>/logs/slurm/<run_id>_<timestamp>.sbatch",
+      "submit_command": "sbatch ...",
+      "pipeline_log": "results/runs/<run_id>/logs/orchestrator/<timestamp>_<mode>/pipeline.log",
+      "submission_recorded_utc": "2026-03-02T10:00:00Z"
+    }
   },
   "paths": {
     "run_dir": "results/runs/<run_id>",
     "raw_dir": "results/runs/<run_id>/raw",
     "parsed_dir": "results/runs/<run_id>/parsed"
-  }
+  },
+  "execution_events": [
+    {
+      "timestamp_utc": "2026-03-02T09:40:00Z",
+      "event": "dryrun_completed",
+      "status": "ok",
+      "mode": "dryrun",
+      "message": "Dry-run completed successfully.",
+      "log_path": "results/runs/<run_id>/logs/orchestrator/<timestamp>_dryrun/pipeline.log"
+    }
+  ],
+  "last_update_utc": "2026-03-02T10:00:00Z"
 }
 ```
 

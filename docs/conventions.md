@@ -22,7 +22,7 @@ Bootstrap command:
 
 Required subpaths/files (baseline contract):
 - `inputs/` snapshot of INCAR/KPOINTS/POSCAR/POTCAR metadata and config
-- `logs/` scheduler + code logs
+- `logs/` scheduler + orchestration + parser logs
 - `raw/` parser-ready raw outputs
 - `parsed/` extracted tables/json
 - `manifest.json`
@@ -31,6 +31,22 @@ Required subpaths/files (baseline contract):
 
 Metrics parser command:
 `python tools/extract_metrics.py --run-dir results/runs/<run_id>`
+
+## HPC Pipeline Convention
+Required execution order before real scheduler submission:
+1. `dryrun`
+2. `smoke`
+3. `submit`
+
+Reference scripts:
+- Single config: `tools/hpc/run_vasp_pipeline.sh`
+- Batch configs: `tools/hpc/run_vasp_batch.sh`
+
+Orchestrator session logs:
+- `results/runs/<run_id>/logs/orchestrator/<timestamp>_<mode>/pipeline.log`
+
+Rendered sbatch scripts:
+- `results/runs/<run_id>/logs/slurm/<run_id>_<timestamp>.sbatch`
 
 ## Config Convention
 - Store config files in `configs/`.
@@ -57,6 +73,7 @@ Metrics parser command:
 - pseudopotential identifiers and exchange-correlation functional
 - convergence settings and scheduler metadata
 - software versions (VASP, parser tools, Python package)
+- execution events for dryrun/smoke/submit attempts
 
 `metrics.json` must include:
 - key converged energies and derived quantities

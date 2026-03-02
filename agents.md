@@ -25,6 +25,9 @@ Define how Codex and human collaborators produce reproducible, research-grade ou
   - `manifest.json`
   - `metrics.json`
   - logs
+- Frontend `dryrun` and `smoke` checks are mandatory before `submit` mode.
+- Workflow execution should use `tools/hpc/run_vasp_pipeline.sh` (single) or `tools/hpc/run_vasp_batch.sh` (batch) unless a documented exception is approved.
+- Every pipeline invocation must append an event to `manifest.json` (`execution_events`) and store session logs under `results/runs/<run_id>/logs/orchestrator/`.
 - Future tasks must also produce an HTML run report for human inspection.
 - Major milestone reports must include a slide deck pair:
   - `presentations/<timestamp_or_stage>_<topic>.pptx`
