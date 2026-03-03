@@ -21,6 +21,7 @@ Ensures every execution step is explicit, reviewable, and reproducible against t
 ## Key Documents
 - `roadmap.md`
 - `getting_started.md`
+- `vasp_primer.md`
 - `conventions.md`
 - `data_model.md`
 - `config_schema.md`

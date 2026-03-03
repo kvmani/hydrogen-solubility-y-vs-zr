@@ -18,7 +18,13 @@ Provide cluster-agnostic templates and operational runbooks for reproducible VAS
 ## Mission Link
 Defines the execution contract that turns documented methodology into auditable compute runs with dry-run-first safety.
 
+## Related Learning Docs
+- Foundational concepts primer: `../docs/vasp_primer.md`
+- Beginner run tutorial: `beginner_vasp_tutorial.md`
+- Module discovery tutorial: `vasp_module_discovery_tutorial.md`
+
 ## Related Orchestration Tools
+- `tools/hpc/discover_vasp_modules.sh`
 - `tools/hpc/check_vasp_installation.sh`
 - `tools/hpc/run_vasp_pipeline.sh`
 - `tools/hpc/run_vasp_batch.sh`

@@ -3,6 +3,8 @@
 This tutorial is written for first-time VASP users and follows this project’s safety policy:
 `check environment -> dry-run -> smoke -> submit real jobs`.
 
+Before this tutorial, read: `docs/vasp_primer.md`.
+
 ## 0) What You Need Before You Start
 - Access to an HPC account with VASP license entitlement.
 - A known module stack (compiler, MPI, VASP module names).
@@ -66,24 +68,24 @@ Notes:
 ## 5) Project Workflow (Dry-Run First)
 After VASP environment is healthy, use the project pipeline.
 
-### 4.1 Generate Stage-1 campaign configs
+### 5.1 Generate Stage-1 campaign configs
 ```bash
 make plan-stage1
 ```
 
-### 4.2 Dry-run all campaign configs (no real compute)
+### 5.2 Dry-run all campaign configs (no real compute)
 ```bash
 tools/hpc/run_vasp_batch.sh --mode dryrun configs/generated/<campaign_dir>/*.yaml
 ```
 
-### 4.3 Fill run input decks
+### 5.3 Fill run input decks
 For each run folder under `results/runs/<run_id>/inputs/`, provide:
 - `POSCAR`
 - `KPOINTS`
 - `INCAR` (or use template sync)
 - `POTCAR`
 
-### 4.4 Smoke mode (checks job scripts without launching real VASP)
+### 5.4 Smoke mode (checks job scripts without launching real VASP)
 ```bash
 tools/hpc/run_vasp_batch.sh \
   --mode smoke \
@@ -93,7 +95,7 @@ tools/hpc/run_vasp_batch.sh \
   configs/generated/<campaign_dir>/*.yaml
 ```
 
-### 4.5 Submit real jobs
+### 5.5 Submit real jobs
 ```bash
 tools/hpc/run_vasp_batch.sh \
   --mode submit \

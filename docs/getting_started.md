@@ -13,6 +13,7 @@
 - `mission_goals.md`
 - `agents.md`
 - `docs/roadmap.md`
+- `docs/vasp_primer.md`
 - `docs/conventions.md`
 - `docs/data_model.md`
 - `hpc/beginner_vasp_tutorial.md`

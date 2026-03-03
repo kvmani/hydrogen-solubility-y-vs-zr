@@ -3,7 +3,7 @@
 This runbook is cluster-agnostic and assumes VASP execution on an HPC using Slurm.
 
 ## 0) New To VASP?
-Start with `hpc/beginner_vasp_tutorial.md` first.
+Start with `docs/vasp_primer.md`, then `hpc/beginner_vasp_tutorial.md`.
 If module names are unknown on your cluster, run `hpc/vasp_module_discovery_tutorial.md` before this runbook.
 
 ## 1) Prerequisites

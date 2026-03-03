@@ -6,6 +6,7 @@ Documentation-first, reproducible research scaffold for building a quantitativel
 - Mission and scientific scope: `mission_goals.md`
 - Collaboration contract for Codex/humans: `agents.md`
 - Execution plan and stage gates: `docs/roadmap.md`
+- VASP primer (concepts + workflow): `docs/vasp_primer.md`
 - Local/HPC bootstrap: `docs/getting_started.md`
 - Stage-1 campaign guide: `docs/stage1_campaign.md`
 - Beginner VASP tutorial: `hpc/beginner_vasp_tutorial.md`
