@@ -22,12 +22,51 @@ Outputs:
 - `stage1_campaign_plan.csv` (execution order + metadata)
 - optional `stage1_campaign_plan.json`
 
-## 2) Validate Generated Configs
+## 2) Preflight + Validate Generated Configs
+Audit scheduler readiness (partition/account placeholders) and schema validity:
+
+```bash
+python tools/hpc/preflight_scheduler_configs.py \
+  --fail-if-unready \
+  configs/generated/stage1_campaign_<timestamp>
+```
+
+If placeholders remain, patch them in-place:
+
+```bash
+python tools/hpc/preflight_scheduler_configs.py \
+  --set-partition <partition> \
+  --set-account <account> \
+  --write \
+  configs/generated/stage1_campaign_<timestamp>
+```
+
+Then run schema validation:
+
 ```bash
 python tools/validate_config.py configs/generated/stage1_campaign_<timestamp>/*.yaml
 ```
 
-## 3) Frontend Dry-Run First
+## 3) Preflight Input Deck Completeness
+After run directories are initialized and input decks are staged in each `inputs/` folder:
+
+```bash
+python tools/hpc/preflight_input_decks.py \
+  --require-potcar true \
+  --fail-if-unready \
+  configs/generated/stage1_campaign_<timestamp>
+```
+
+Optional bootstrap for missing run directories (still requires manual deck placement):
+
+```bash
+python tools/hpc/preflight_input_decks.py \
+  --require-potcar true \
+  --init-if-missing \
+  configs/generated/stage1_campaign_<timestamp>
+```
+
+## 4) Frontend Dry-Run First
 Run dry-run over all generated configs:
 
 ```bash
@@ -38,7 +77,7 @@ tools/hpc/run_vasp_batch.sh \
 
 Dry-run checks config validity, run directory state, input readiness, and rendered sbatch syntax.
 
-## 4) Frontend Smoke Checks
+## 5) Frontend Smoke Checks
 After filling required `inputs/` decks (`POSCAR`, `KPOINTS`, `INCAR`, and `POTCAR` for submit mode):
 
 ```bash
@@ -50,7 +89,7 @@ tools/hpc/run_vasp_batch.sh \
   configs/generated/stage1_campaign_<timestamp>/*.yaml
 ```
 
-## 5) Submit Real Jobs
+## 6) Submit Real Jobs
 Only after dry-run and smoke pass:
 
 ```bash
@@ -63,14 +102,14 @@ tools/hpc/run_vasp_batch.sh \
   configs/generated/stage1_campaign_<timestamp>/*.yaml
 ```
 
-## 6) Parse Results
+## 7) Parse Results
 After each run finishes:
 
 ```bash
 python tools/extract_metrics.py --run-dir results/runs/<run_id>
 ```
 
-## 7) Stage-1 Exit Criteria
+## 8) Stage-1 Exit Criteria
 - ENCUT convergence achieved for Y and Zr at target tolerance (`convergence_scan.tolerance_meV_per_atom`).
 - k-point convergence achieved for Y and Zr with consistent methodology.
 - All accepted runs have `manifest.json`, `metrics.json`, and traceable logs.

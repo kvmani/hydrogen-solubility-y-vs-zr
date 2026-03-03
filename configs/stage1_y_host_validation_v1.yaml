@@ -51,6 +51,7 @@ outputs:
   results_root: "results/runs"
   write_manifest: true
   write_metrics: true
+  write_report_html: true
 
 provenance:
   potcar_labels: ["Y_sv"]

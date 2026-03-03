@@ -94,14 +94,17 @@ Minimal schema:
 Extraction note:
 - `tools/extract_metrics.py` populates this structure from `raw/OUTCAR` and `raw/OSZICAR`.
 
-## Human Report Requirement (Future Stages)
-Each run will also require a concise human-readable `report.html` summarizing:
+## Human Report Requirement
+Each run should include a concise human-readable `report.html` summarizing:
 - objective and config
 - key energies/derived quantities
 - convergence evidence
 - pass/fail decisions and next action
 
-The HTML report is mandatory for completed research runs in later tasks.
+Current implementation:
+- `tools/init_run.py` now emits an initial `report.html`.
+- `tools/extract_metrics.py --run-dir ...` refreshes `report.html` after parsing outputs.
+- `tools/generate_run_report.py --run-dir ...` can regenerate from existing JSON artifacts.
 
 ## Major-Update Presentation Requirement
 For major result sets/feature additions, generate and version:

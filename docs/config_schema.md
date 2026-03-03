@@ -34,6 +34,7 @@ This document defines the first enforced config contract for host-only Stage-1 r
 - `provenance.potcar_labels` must include system-appropriate label:
   - `Y*` for `system=Y`
   - `Zr*` for `system=Zr`
+- `outputs.write_report_html` controls per-run `report.html` generation (default: `true`).
 
 ## Operational Note For Slurm Submission
 - Placeholder strings such as `<partition>` and `<account>` are accepted by schema validation but are intentionally blocked in submit mode by `tools/hpc/run_vasp_pipeline.sh`.

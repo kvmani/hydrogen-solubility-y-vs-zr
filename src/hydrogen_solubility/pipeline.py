@@ -6,6 +6,7 @@ from pathlib import Path
 import json
 
 from .config_models import load_stage1_host_config
+from .reporting import write_run_report
 from .vasp_metrics import build_stage1_metrics_payload
 
 def load_config(path: str) -> dict:
@@ -31,6 +32,24 @@ def write_metrics(run_dir: str, payload: dict) -> None:
     output_path.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n")
 
 
+def write_report(
+    run_dir: str,
+    *,
+    manifest_payload: dict | None = None,
+    metrics_payload: dict | None = None,
+    output_name: str = "report.html",
+) -> str:
+    """Write human-readable HTML report according to docs/data_model.md."""
+
+    path = write_run_report(
+        run_dir,
+        manifest=manifest_payload,
+        metrics=metrics_payload,
+        output_name=output_name,
+    )
+    return str(path)
+
+
 def extract_and_write_metrics(
     run_dir: str,
     *,
@@ -49,4 +68,5 @@ def extract_and_write_metrics(
     payload["artifacts"]["outcar"] = outcar_rel
     payload["artifacts"]["oszicar"] = oszicar_rel
     write_metrics(str(run_path), payload)
+    write_report(str(run_path), metrics_payload=payload)
     return payload

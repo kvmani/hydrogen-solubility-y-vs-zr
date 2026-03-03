@@ -20,3 +20,8 @@ Config-driven execution ensures reproducibility and fair Y-vs-Zr comparisons.
 - Validate configs before running:
   - `python tools/validate_config.py configs/stage1_y_host_validation_v1.yaml`
   - `python tools/validate_config.py configs/stage1_zr_host_validation_v1.yaml`
+
+## Output Flags
+- `outputs.write_manifest`: write/update `manifest.json`.
+- `outputs.write_metrics`: write/update `metrics.json`.
+- `outputs.write_report_html`: write/update `report.html`.

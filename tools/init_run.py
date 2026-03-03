@@ -51,6 +51,7 @@ def main() -> int:
     print(f"  run_dir: {result['run_dir']}")
     print(f"  manifest: {result['manifest']}")
     print(f"  metrics: {result['metrics']}")
+    print(f"  report: {result['report']}")
     print(f"  config_snapshot: {result['config_snapshot']}")
     return 0
 

@@ -1,8 +1,12 @@
-.PHONY: lint test docs-check present init-run-y extract-metrics hpc-dryrun-y hpc-smoke-y hpc-submit-y hpc-batch-dryrun plan-stage1
+.PHONY: lint test docs-check present init-run-y extract-metrics report-run hpc-preflight hpc-preflight-inputs hpc-preflight-all hpc-patch-scheduler hpc-dryrun-y hpc-smoke-y hpc-submit-y hpc-batch-dryrun plan-stage1
 
 RUN_DIR ?= results/runs/20260302_Y_stage1_dft_001
 Y_CONFIG ?= configs/stage1_y_host_validation_v1.yaml
 ZR_CONFIG ?= configs/stage1_zr_host_validation_v1.yaml
+HPC_CONFIG_PATHS ?= $(Y_CONFIG) $(ZR_CONFIG)
+HPC_PARTITION ?= <partition>
+HPC_ACCOUNT ?= <account>
+HPC_REQUIRE_POTCAR ?= true
 COMPILER_MODULE ?= <compiler_module>
 MPI_MODULE ?= <mpi_module>
 VASP_MODULE ?= <vasp_module>
@@ -33,6 +37,25 @@ init-run-y:
 
 extract-metrics:
 	@python tools/extract_metrics.py --run-dir $(RUN_DIR)
+
+report-run:
+	@python tools/generate_run_report.py --run-dir $(RUN_DIR)
+
+hpc-preflight:
+	@python tools/hpc/preflight_scheduler_configs.py --fail-if-unready $(HPC_CONFIG_PATHS)
+
+hpc-preflight-inputs:
+	@python tools/hpc/preflight_input_decks.py --fail-if-unready --require-potcar $(HPC_REQUIRE_POTCAR) $(HPC_CONFIG_PATHS)
+
+hpc-preflight-all: hpc-preflight hpc-preflight-inputs
+
+hpc-patch-scheduler:
+	@python tools/hpc/preflight_scheduler_configs.py \
+		--set-partition "$(HPC_PARTITION)" \
+		--set-account "$(HPC_ACCOUNT)" \
+		--write \
+		--fail-if-unready \
+		$(HPC_CONFIG_PATHS)
 
 hpc-dryrun-y:
 	@tools/hpc/run_vasp_pipeline.sh --mode dryrun --config $(Y_CONFIG)

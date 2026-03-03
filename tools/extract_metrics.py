@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Extract stage-1 metrics from VASP outputs and write metrics.json."""
+"""Extract stage-1 metrics from VASP outputs and write metrics/report artifacts."""
 
 from __future__ import annotations
 
@@ -12,7 +12,17 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 SRC_ROOT = REPO_ROOT / "src"
 sys.path.insert(0, str(SRC_ROOT))
 
+from hydrogen_solubility.reporting import write_run_report  # noqa: E402
 from hydrogen_solubility.vasp_metrics import build_stage1_metrics_payload  # noqa: E402
+
+
+def _parse_bool(raw: str) -> bool:
+    value = str(raw).strip().lower()
+    if value in {"true", "1", "yes", "y"}:
+        return True
+    if value in {"false", "0", "no", "n"}:
+        return False
+    raise argparse.ArgumentTypeError(f"invalid boolean value: {raw}")
 
 
 def _parser() -> argparse.ArgumentParser:
@@ -46,6 +56,17 @@ def _parser() -> argparse.ArgumentParser:
         default="metrics.json",
         help="metrics output path relative to run dir (default: metrics.json).",
     )
+    parser.add_argument(
+        "--write-report",
+        default=True,
+        type=_parse_bool,
+        help="Write report.html after metrics extraction (default: true).",
+    )
+    parser.add_argument(
+        "--report-output",
+        default="report.html",
+        help="Report output path relative to run dir (default: report.html).",
+    )
     return parser
 
 
@@ -73,7 +94,17 @@ def main() -> int:
     output_path = (run_dir / args.output).resolve()
     output_path.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n")
 
+    report_path = None
+    if bool(args.write_report):
+        report_path = write_run_report(
+            run_dir,
+            metrics=payload,
+            output_name=args.report_output,
+        )
+
     print(f"[OK] metrics written: {output_path}")
+    if report_path is not None:
+        print(f"[OK] report written: {report_path}")
     print(f"  run_id: {run_id}")
     print(f"  status: {payload['status']}")
     print(f"  total_energy_eV: {payload['energetics']['total_energy_eV']}")

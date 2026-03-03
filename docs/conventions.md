@@ -32,6 +32,9 @@ Required subpaths/files (baseline contract):
 Metrics parser command:
 `python tools/extract_metrics.py --run-dir results/runs/<run_id>`
 
+Report regeneration command:
+`python tools/generate_run_report.py --run-dir results/runs/<run_id>`
+
 ## HPC Pipeline Convention
 Required execution order before real scheduler submission:
 1. `dryrun`

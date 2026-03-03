@@ -163,6 +163,7 @@ class OutputsSection(BaseModel):
     results_root: str = Field(min_length=1)
     write_manifest: bool = True
     write_metrics: bool = True
+    write_report_html: bool = True
 
 
 class ProvenanceSection(BaseModel):

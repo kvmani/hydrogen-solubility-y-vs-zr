@@ -6,6 +6,8 @@ Provide robust, scriptable orchestration for VASP workflows on Slurm with dry-ru
 ## Goes In
 - `discover_vasp_modules.sh`: module and binary discovery report generator
 - `check_vasp_installation.sh`: frontend-node VASP availability + smoke validator
+- `preflight_scheduler_configs.py`: scheduler-readiness audit + optional placeholder patching for config sets
+- `preflight_input_decks.py`: run-input completeness audit (`INCAR`, `POSCAR`, `KPOINTS`, optional `POTCAR`)
 - `run_vasp_pipeline.sh`: single-config orchestrator (`dryrun`, `smoke`, `submit`)
 - `run_vasp_batch.sh`: batch launcher across multiple configs
 - `submit_vasp_job.sh`: sbatch wrapper preserving submit-directory provenance

@@ -10,7 +10,7 @@ from typing import Any
 
 from .__version__ import __version__
 from .config_models import Stage1HostConfig, load_stage1_host_config
-from .pipeline import write_manifest, write_metrics
+from .pipeline import write_manifest, write_metrics, write_report
 
 RUN_SUBDIRS = ("inputs", "logs", "raw", "parsed")
 
@@ -173,15 +173,21 @@ def init_run_from_config(
     snapshot_path = run_dir / "inputs" / f"config_snapshot{config_file.suffix.lower() or '.yaml'}"
     shutil.copy2(config_file, snapshot_path)
 
+    manifest_payload = _manifest_payload(config=config, config_path=config_file, run_dir=run_dir, repo_root=repo_root)
+    metrics_payload = _metrics_payload(config)
+
     if config.outputs.write_manifest or force:
-        write_manifest(str(run_dir), _manifest_payload(config=config, config_path=config_file, run_dir=run_dir, repo_root=repo_root))
+        write_manifest(str(run_dir), manifest_payload)
     if config.outputs.write_metrics or force:
-        write_metrics(str(run_dir), _metrics_payload(config))
+        write_metrics(str(run_dir), metrics_payload)
+    if config.outputs.write_report_html or force:
+        write_report(str(run_dir), manifest_payload=manifest_payload, metrics_payload=metrics_payload)
 
     return {
         "run_id": config.run.run_id,
         "run_dir": str(run_dir),
         "manifest": str(run_dir / "manifest.json"),
         "metrics": str(run_dir / "metrics.json"),
+        "report": str(run_dir / "report.html"),
         "config_snapshot": str(snapshot_path),
     }
