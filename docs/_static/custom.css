@@ -1,0 +1,30 @@
+:root {
+  --hydrogen-doc-accent: #1f4e79;
+  --hydrogen-doc-accent-dark: #12263a;
+  --hydrogen-doc-gold: #b58900;
+}
+
+.sd-card {
+  border-radius: 14px;
+  border: 1px solid rgba(31, 78, 121, 0.18);
+  box-shadow: 0 8px 24px rgba(18, 38, 58, 0.06);
+}
+
+.sd-card-title {
+  color: var(--hydrogen-doc-accent-dark);
+}
+
+.admonition.note,
+.admonition.important,
+.admonition.tip {
+  border-left-width: 4px;
+}
+
+.wy-side-nav-search,
+.sidebar-brand {
+  background: linear-gradient(180deg, var(--hydrogen-doc-accent-dark), #173958);
+}
+
+blockquote {
+  border-left: 4px solid var(--hydrogen-doc-gold);
+}

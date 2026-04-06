@@ -9,3 +9,12 @@ __pycache__/
 # Local virtual environments
 .venv/
 venv/
+
+# Sphinx build output
+docs/_build/
+docs/.doctrees/
+
+# Generated presentation artifacts
+presentations/*.pptx
+presentations/*.pdf
+presentations/*_manifest.json

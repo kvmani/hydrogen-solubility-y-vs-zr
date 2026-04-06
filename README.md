@@ -3,9 +3,14 @@
 Documentation-first, reproducible research scaffold for building a quantitatively defensible DFT + thermodynamics explanation of why hydrogen solubility is much higher in yttrium than in zirconium.
 
 ## Start Here
-- Mission and scientific scope: `mission_goals.md`
-- Collaboration contract for Codex/humans: `agents.md`
+- Canonical Sphinx docs site: `docs/index.md`
+- Mission and scientific scope: `docs/mission.md` and `mission_goals.md`
+- Collaboration contract for Codex/humans: `docs/collaboration_contract.md` and `agents.md`
 - Execution plan and stage gates: `docs/roadmap.md`
+- Scientific foundation and equations: `docs/scientific_foundation.md`
+- Workflow and algorithm map: `docs/computational_workflow.md`
+- Provenance contract and artifact semantics: `docs/provenance_and_contract.md`
+- Manuscript blueprint: `docs/manuscript_blueprint.md`
 - VASP primer (concepts + workflow): `docs/vasp_primer.md`
 - End-to-end VASP execution guide (inputs + HPC + analysis): `docs/vasp_simulation_guide.md`
 - Local/HPC bootstrap: `docs/getting_started.md`
@@ -33,9 +38,13 @@ Documentation-first, reproducible research scaffold for building a quantitativel
 - Slurm execution must follow `dryrun -> smoke -> submit`.
 - Factual claims in docs must cite primary sources (DOI or authoritative handbook).
 - Human-readable run reports (HTML) are required for each completed run in later tasks.
-- Major updates must also generate dissemination decks (`.pptx` + `.pdf`) in `presentations/`.
+- Major updates should also generate dissemination decks (`.pptx` + `.pdf`) in `presentations/` for review; the rendered files are ignored by git.
+- Documentation changes should be build-checked with `make docs-check` before merge.
 
 ## Quick Commands
+- Build the Sphinx docs:
+  - `pip install -r requirements-docs.txt`
+  - `python -m sphinx -W -b html docs docs/_build/html`
 - Validate configs:
   - `python tools/validate_config.py configs/stage1_y_host_validation_v1.yaml configs/stage1_zr_host_validation_v1.yaml`
 - Preflight scheduler readiness (placeholders/validation):

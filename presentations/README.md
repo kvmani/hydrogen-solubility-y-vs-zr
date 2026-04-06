@@ -4,21 +4,19 @@
 Store presentation assets derived from documented results.
 
 ## Goes In
-- Slide decks (`.pptx`, `.pdf`) and exported figures used for talks/reviews
-- Figure source notes linking slides to run IDs
-- Deck manifests (`*_manifest.json`) used to generate slides
+- Slide deck source notes and figure references used for talks/reviews
+- Deck generation manifests and scratch notes while working locally
 
 ## Does NOT Go In
 - Primary raw simulation data
 - Untraceable screenshots without run context
+- Generated `.pptx` and `.pdf` deck binaries, which are treated as build artifacts and ignored by git
 
 ## Mission Link
 Communicates validated findings while preserving traceability to reproducible runs.
 
 ## Required For Major Updates
-Every major result set or feature addition must include:
-- one `.pptx` deck
-- one `.pdf` export of the same deck
+Every major result set or feature addition should still be turned into a `.pptx`/`.pdf` deck for review, but the rendered files remain untracked.
 
 ## Generator
 Use:

@@ -66,8 +66,18 @@ Rendered sbatch scripts:
 - Major update deck naming:
   - `<YYYYMMDD>_<stage_or_feature>_<topic>.pptx`
   - `<YYYYMMDD>_<stage_or_feature>_<topic>.pdf`
-- Keep the generated manifest next to decks:
+- Keep the generated manifest next to decks while you are working locally:
   - `<YYYYMMDD>_<stage_or_feature>_<topic>_manifest.json`
+- Generated deck binaries and manifests are build artifacts and are ignored by git.
+
+## Documentation Convention
+- `docs/index.md` is the Sphinx landing page and the canonical docs entry point.
+- Any change to the scientific argument, equations, model assumptions, or interpretation must update `docs/scientific_foundation.md`.
+- Any change to orchestration, parsing, or reporting algorithms must update `docs/computational_workflow.md`.
+- Any change to the public Python surface should update `docs/api_reference.md`.
+- Any change that affects the manuscript narrative should update `docs/manuscript_blueprint.md`.
+- New scientific claims must be backed by DOI-backed primary sources in `literature/library.bib` and reflected in `literature/lit_review.md`.
+- Run `make docs-check` after substantive changes that touch science, workflow, provenance, or public API surface.
 
 ## Metadata And Provenance Expectations
 `manifest.json` must include:
@@ -87,3 +97,4 @@ Rendered sbatch scripts:
 Any change to conventions here requires corresponding updates in:
 - `docs/data_model.md` for schema impacts
 - `agents.md` if process rules change
+- `docs/index.md` and the relevant Sphinx pages if human-facing docs need to evolve

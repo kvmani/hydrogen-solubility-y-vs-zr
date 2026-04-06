@@ -2,6 +2,8 @@
 
 This primer is for beginners who want to understand how VASP calculations are designed, executed, and analyzed before using the advanced orchestration scripts in this repository.
 
+If you want the more project-specific DFT theory, read [`docs/dft_introduction.md`](dft_introduction.md). If you want the practical run path, read [`docs/beginner_workflow.md`](beginner_workflow.md).
+
 ## 1) What VASP Is (Philosophy + Modeling Assumptions)
 VASP solves the electronic structure problem for periodic solids using Kohn-Sham density functional theory (DFT) with a plane-wave basis and pseudopotential/PAW datasets.
 

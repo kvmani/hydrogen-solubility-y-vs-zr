@@ -1,4 +1,4 @@
-.PHONY: lint test docs-check present init-run-y extract-metrics report-run hpc-preflight hpc-preflight-inputs hpc-preflight-all hpc-patch-scheduler hpc-dryrun-y hpc-smoke-y hpc-submit-y hpc-batch-dryrun plan-stage1
+.PHONY: lint test docs-build docs-linkcheck docs-check present init-run-y extract-metrics report-run hpc-preflight hpc-preflight-inputs hpc-preflight-all hpc-patch-scheduler hpc-dryrun-y hpc-smoke-y hpc-submit-y hpc-batch-dryrun plan-stage1
 
 RUN_DIR ?= results/runs/20260302_Y_stage1_dft_001
 Y_CONFIG ?= configs/stage1_y_host_validation_v1.yaml
@@ -10,6 +10,9 @@ HPC_REQUIRE_POTCAR ?= true
 COMPILER_MODULE ?= <compiler_module>
 MPI_MODULE ?= <mpi_module>
 VASP_MODULE ?= <vasp_module>
+SPHINX ?= python -m sphinx
+DOCS_BUILDDIR ?= docs/_build/html
+DOCS_LINKCHECKDIR ?= docs/_build/linkcheck
 
 lint:
 	@echo "TODO: add lint pipeline (e.g., ruff + markdownlint)."
@@ -19,10 +22,17 @@ test:
 		$(Y_CONFIG) \
 		$(ZR_CONFIG)
 
+docs-build:
+	@$(SPHINX) -W -b html docs $(DOCS_BUILDDIR)
+
+docs-linkcheck:
+	@$(SPHINX) -W -b linkcheck docs $(DOCS_LINKCHECKDIR)
+
 docs-check:
 	@python tools/validate_config.py \
 		$(Y_CONFIG) \
 		$(ZR_CONFIG)
+	@$(SPHINX) -W -b html docs $(DOCS_BUILDDIR)
 
 present:
 	@python tools/presentation/generate_lab_meeting_ppt.py \

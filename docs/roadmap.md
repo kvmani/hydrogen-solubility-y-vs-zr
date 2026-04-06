@@ -63,7 +63,14 @@
 - Each step must emit logs and manifest execution events.
 
 ## Cross-Stage Dissemination Requirement
-- Any major result set or feature addition must produce a discussion-ready deck:
+- Any major result set or feature addition must produce a discussion-ready deck in `presentations/` for review:
   - `presentations/<name>.pptx`
   - `presentations/<name>.pdf`
+- The rendered deck files are treated as generated artifacts and are not committed.
 - Recommended generator: `tools/presentation/generate_lab_meeting_ppt.py`.
+
+## Cross-Stage Documentation Requirement
+- The Sphinx docs site under `docs/` is a required project surface, not a side note.
+- Any substantive code, workflow, or scientific-interpretation change must update the matching docs page(s) in the same change set.
+- New scientific claims must be reflected in `literature/lit_review.md` and, if needed, the BibTeX library.
+- `make docs-check` should pass before a substantive change is considered complete.
