@@ -1,72 +1,409 @@
-"""Workflow placeholders for upcoming config-driven execution tasks."""
+"""``hsol run``: the dryrun -> smoke -> submit pipeline for Slurm.
+
+The three modes are deliberately cumulative and the order is enforced:
+
+``dryrun``  Checks the run is prepared, renders the job script and syntax-checks it
+            (``bash -n``). Touches nothing but ``logs/`` and the manifest. Safe
+            anywhere, including a laptop without VASP.
+``smoke``   Requires a POTCAR and a filled-in ``configs/site.yaml``. Executes the job
+            script locally on a scratch copy of the inputs with ``HSOL_SMOKE_ONLY=1``
+            (loads modules, finds the VASP binary and launcher, then exits before
+            VASP starts) and asks Slurm to validate the request with
+            ``sbatch --test-only``. ``raw/`` is never touched.
+``submit``  Refuses unless a smoke test passed for *exactly* the current inputs and
+            site settings, then submits with ``sbatch --parsable`` and records the
+            job id. A run that was already submitted is only resubmitted with
+            ``--resubmit``, which archives the previous ``raw/`` directory first.
+
+Each invocation writes a session folder ``logs/<UTC stamp>_<mode>/`` containing
+``pipeline.log``, the rendered ``job.sbatch`` and any scheduler output, and adds
+an event to ``manifest.json``.
+"""
 
 from __future__ import annotations
 
+import os
+import shlex
+import shutil
+import subprocess
+import sys
+from dataclasses import dataclass, field
 from pathlib import Path
-import json
+from typing import List, Optional, TextIO
 
-from .config_models import load_stage1_host_config
-from .reporting import write_run_report
-from .vasp_metrics import build_stage1_metrics_payload
+from .config_models import RunConfig, SiteConfig, load_run_config
+from .paths import REPO_ROOT, display_path
+from .provenance import append_event, last_event, read_json, utc_now, utc_stamp
+from .run_bootstrap import INPUT_FILES, copy_inputs_to_raw, run_dir_for
 
-def load_config(path: str) -> dict:
-    """Load and validate a stage-1 host config from YAML/JSON."""
-
-    model = load_stage1_host_config(path)
-    return model.model_dump(mode="json")
-
-
-def write_manifest(run_dir: str, payload: dict) -> None:
-    """Write manifest JSON according to docs/data_model.md."""
-
-    output_path = Path(run_dir) / "manifest.json"
-    output_path.parent.mkdir(parents=True, exist_ok=True)
-    output_path.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n")
+MODES = ("dryrun", "smoke", "submit")
+#: Events that redefine a run's inputs: smoke tests recorded before them are void.
+INPUT_CHANGE_EVENTS = ("prepared", "inputs_regenerated")
+#: Events that start a fresh attempt: submissions recorded before them are history.
+ATTEMPT_RESET_EVENTS = INPUT_CHANGE_EVENTS + ("resubmit_archived",)
 
 
-def write_metrics(run_dir: str, payload: dict) -> None:
-    """Write metrics JSON according to docs/data_model.md."""
-
-    output_path = Path(run_dir) / "metrics.json"
-    output_path.parent.mkdir(parents=True, exist_ok=True)
-    output_path.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n")
+class PipelineError(RuntimeError):
+    """A gate failed; the message tells the user what to fix."""
 
 
-def write_report(
-    run_dir: str,
+@dataclass
+class PipelineResult:
+    run_id: str
+    mode: str
+    ok: bool
+    message: str
+    job_id: Optional[str] = None
+    session_dir: Optional[Path] = None
+    warnings: List[str] = field(default_factory=list)
+
+
+class SessionLog:
+    """Timestamped log lines written to ``pipeline.log`` and echoed to the console."""
+
+    def __init__(self, path: Path, *, echo: bool = True, stream: TextIO = sys.stdout) -> None:
+        path.parent.mkdir(parents=True, exist_ok=True)
+        self.path = path
+        self.echo = echo
+        self.stream = stream
+
+    def __call__(self, level: str, message: str) -> None:
+        line = f"[{utc_now()}] [{level}] {message}"
+        with self.path.open("a", encoding="utf-8") as handle:
+            handle.write(line + "\n")
+        if self.echo:
+            print(line, file=self.stream)
+
+
+# ------------------------------------------------------------------------ job script
+
+
+def vasp_binary(config: RunConfig, site: SiteConfig) -> str:
+    return site.vasp.binary_gam if config.vasp.binary == "gam" else site.vasp.binary_std
+
+
+def render_job_script(config: RunConfig, site: SiteConfig, run_dir: Path, python: str) -> str:
+    """Render the Slurm batch script for one run."""
+
+    q = shlex.quote
+    directives = [
+        f"--job-name={config.run_id}",
+        f"--output={run_dir / 'logs' / 'slurm-%j.out'}",
+        f"--error={run_dir / 'logs' / 'slurm-%j.err'}",
+        f"--nodes={config.hpc.nodes}",
+        f"--ntasks={config.hpc.ntasks}",
+        f"--time={config.hpc.walltime}",
+        f"--partition={site.slurm.partition}",
+        f"--account={site.slurm.account}",
+        *site.slurm.extra_directives,
+    ]
+    shebang = "#!/bin/bash -l" if site.environment.login_shell else "#!/bin/bash"
+    lines = [shebang, f"# Generated by `hsol run` for {config.run_id}. Do not edit; edit configs instead."]
+    lines += [f"#SBATCH {d}" for d in directives]
+    lines += [
+        "",
+        "set -eo pipefail",
+        f"RUN_ID={q(config.run_id)}",
+        f"RUN_DIR={q(str(run_dir))}",
+        f"REPO_ROOT={q(str(REPO_ROOT))}",
+        f"HSOL_PYTHON={q(python)}",
+        f"VASP_BIN={q(vasp_binary(config, site))}",
+        "# The launcher may reference job variables such as $SLURM_NTASKS, so it is",
+        "# expanded at run time with eval (its text comes from configs/site.yaml).",
+        f"LAUNCH_COMMAND={q(site.vasp.launch_command)}",
+        'echo "[$(date -u +%Y-%m-%dT%H:%M:%SZ)] run=$RUN_ID host=$(hostname) job=${SLURM_JOB_ID:-local}"',
+        "",
+    ]
+    if site.environment.modules or site.environment.module_purge:
+        lines.append("if command -v module >/dev/null 2>&1; then")
+        if site.environment.module_purge:
+            lines.append("  module purge")
+        lines += [f"  module load {q(m)}" for m in site.environment.modules]
+        lines += ["else", '  echo "WARNING: environment modules not available; using the current PATH"', "fi"]
+    lines += list(site.environment.setup_commands)
+    lines += [
+        "export OMP_NUM_THREADS=1",
+        "# VASP works in raw/; the smoke test points HSOL_WORK_DIR at a scratch copy instead.",
+        'WORK_DIR="${HSOL_WORK_DIR:-$RUN_DIR/raw}"',
+        'cd "$WORK_DIR"',
+        f"for f in {' '.join(INPUT_FILES)}; do",
+        '  [[ -f "$f" ]] || { echo "ERROR: missing input $WORK_DIR/$f"; exit 2; }',
+        "done",
+        "",
+        'if [[ "${HSOL_SMOKE_ONLY:-0}" == "1" ]]; then',
+        '  command -v "$VASP_BIN" >/dev/null ||',
+        "    { echo \"ERROR: VASP binary '$VASP_BIN' not found after module setup\"; exit 3; }",
+        "  launcher=${LAUNCH_COMMAND%% *}",
+        '  command -v "$launcher" >/dev/null || { echo "ERROR: launcher \'$launcher\' not found"; exit 3; }',
+        '  echo "SMOKE OK: binary=$(command -v "$VASP_BIN") launcher=$(command -v "$launcher")"',
+        "  exit 0",
+        "fi",
+        "",
+        "set +e",
+        'eval "$LAUNCH_COMMAND \\"\\$VASP_BIN\\"" > vasp.out 2> vasp.err',
+        "vasp_rc=$?",
+        "set -e",
+        'echo "[$(date -u +%Y-%m-%dT%H:%M:%SZ)] VASP exited with code $vasp_rc"',
+        "# Parse outputs straight away; harmless if it fails (run `hsol collect` later).",
+        '"$HSOL_PYTHON" "$REPO_ROOT/hsol" collect --quiet "$RUN_ID" || echo "WARNING: automatic collect failed"',
+        "exit $vasp_rc",
+    ]
+    return "\n".join(lines) + "\n"
+
+
+# ---------------------------------------------------------------------------- gates
+
+
+def _current_input_hash(manifest: dict) -> Optional[str]:
+    return (manifest.get("inputs") or {}).get("input_hash")
+
+
+def _events_since(manifest: dict, markers: tuple) -> List[dict]:
+    """Events recorded after the most recent event named in ``markers``."""
+
+    events = manifest.get("events", [])
+    last = max((i for i, e in enumerate(events) if e.get("event") in markers), default=-1)
+    return events[last + 1 :]
+
+
+def _check_prepared(config: RunConfig, run_dir: Path) -> dict:
+    manifest = read_json(run_dir / "manifest.json")
+    if not manifest:
+        raise PipelineError(f"{config.run_id} is not prepared yet: run `hsol prepare` on its config first.")
+    if (manifest.get("config") or {}).get("sha256") != config.science_hash():
+        raise PipelineError(f"{config.run_id}: the config changed since `hsol prepare`; prepare it again.")
+    missing = [f for f in INPUT_FILES[:3] if not (run_dir / "inputs" / f).is_file()]
+    if missing:
+        raise PipelineError(f"{config.run_id}: inputs missing {missing}; run `hsol prepare` again.")
+    return manifest
+
+
+def _check_site_ready(site: SiteConfig) -> None:
+    if site.loaded_from is None:
+        raise PipelineError("configs/site.yaml not found: copy configs/site.example.yaml and fill it in.")
+    placeholders = site.placeholder_fields()
+    if placeholders:
+        raise PipelineError(f"configs/site.yaml still has placeholder values for: {', '.join(placeholders)}")
+
+
+def _already_submitted(manifest: dict, run_dir: Path) -> bool:
+    if (run_dir / "raw" / "OUTCAR").exists():
+        return True
+    return any(
+        e.get("event") == "submitted" and e.get("status") == "ok" for e in _events_since(manifest, ATTEMPT_RESET_EVENTS)
+    )
+
+
+def _archive_raw(run_dir: Path) -> Path:
+    """Move the previous attempt's raw/ aside (kept for provenance) and start a fresh one."""
+
+    target = run_dir / "attempts" / utc_stamp()
+    target.parent.mkdir(parents=True, exist_ok=True)
+    shutil.move(str(run_dir / "raw"), str(target))
+    (run_dir / "raw").mkdir()
+    return target
+
+
+def _new_session_dir(run_dir: Path, mode: str) -> Path:
+    """``logs/<UTC stamp>_<mode>``, suffixed if two invocations share the same second."""
+
+    base = run_dir / "logs" / f"{utc_stamp()}_{mode}"
+    session, n = base, 1
+    while session.exists():
+        n += 1
+        session = base.with_name(f"{base.name}-{n}")
+    session.mkdir(parents=True)
+    return session
+
+
+def _run_cmd(cmd: List[str], log_file: Path, env: Optional[dict] = None, timeout: int = 300) -> int:
+    with log_file.open("w", encoding="utf-8") as handle:
+        handle.write("$ " + " ".join(shlex.quote(c) for c in cmd) + "\n")
+        handle.flush()
+        try:
+            proc = subprocess.run(cmd, stdout=handle, stderr=subprocess.STDOUT, env=env, timeout=timeout, check=False)
+        except subprocess.TimeoutExpired:
+            handle.write(f"\nTIMEOUT after {timeout} s\n")
+            return 124
+    return proc.returncode
+
+
+# ----------------------------------------------------------------------------- driver
+
+
+def run_pipeline(
+    config_path: Path,
+    mode: str,
+    site: SiteConfig,
     *,
-    manifest_payload: dict | None = None,
-    metrics_payload: dict | None = None,
-    output_name: str = "report.html",
-) -> str:
-    """Write human-readable HTML report according to docs/data_model.md."""
+    resubmit: bool = False,
+    echo: bool = True,
+) -> PipelineResult:
+    """Run one config through ``mode``. Gate failures are returned, not raised."""
 
-    path = write_run_report(
+    if mode not in MODES:
+        raise ValueError(f"mode must be one of {MODES}")
+    config = load_run_config(config_path)
+    run_dir = run_dir_for(config.run_id, site)
+    if not (run_dir / "manifest.json").exists():
+        return PipelineResult(config.run_id, mode, False, "not prepared: run `hsol prepare` first")
+
+    session = _new_session_dir(run_dir, mode)
+    log = SessionLog(session / "pipeline.log", echo=echo)
+    log("INFO", f"{mode} {config.run_id} (config {display_path(config_path)})")
+    try:
+        return _run_gated(config, config_path, mode, site, run_dir, session, log, resubmit)
+    except PipelineError as exc:
+        log("ERROR", str(exc))
+        append_event(run_dir, f"{mode}_failed", "failed", str(exc), mode=mode, details={"log": display_path(session)})
+        return PipelineResult(config.run_id, mode, False, str(exc), session_dir=session)
+
+
+def _run_gated(
+    config: RunConfig,
+    config_path: Path,
+    mode: str,
+    site: SiteConfig,
+    run_dir: Path,
+    session: Path,
+    log: SessionLog,
+    resubmit: bool,
+) -> PipelineResult:
+    manifest = _check_prepared(config, run_dir)
+    input_hash = _current_input_hash(manifest)
+    warnings: List[str] = []
+    has_potcar = (run_dir / "inputs" / "POTCAR").is_file()
+
+    if mode == "dryrun":
+        if not has_potcar:
+            warnings.append("inputs/POTCAR missing (needed before smoke)")
+        if site.loaded_from is None:
+            warnings.append("configs/site.yaml missing; job script uses placeholder partition/account")
+        elif site.placeholder_fields():
+            warnings.append(f"site placeholders: {', '.join(site.placeholder_fields())}")
+    else:
+        _check_site_ready(site)
+        if not has_potcar:
+            raise PipelineError("inputs/POTCAR missing: set vasp.potcar_root in configs/site.yaml and re-run prepare.")
+
+    if mode == "submit":
+        smoke = last_event({"events": _events_since(manifest, INPUT_CHANGE_EVENTS)}, ["smoke_completed"])
+        details = (smoke or {}).get("details", {})
+        if not smoke or details.get("input_hash") != input_hash or details.get("site") != site.fingerprint():
+            raise PipelineError(
+                "no passing smoke test for the current inputs and site settings: run --mode smoke first."
+            )
+        if _already_submitted(manifest, run_dir):
+            if not resubmit:
+                raise PipelineError(
+                    "already submitted (or outputs exist). Use --resubmit to archive raw/ and run again."
+                )
+            archived = _archive_raw(run_dir)
+            log("INFO", f"previous attempt archived to {display_path(archived)}")
+            append_event(run_dir, "resubmit_archived", "ok", f"raw/ moved to {display_path(archived)}", mode=mode)
+
+    python = site.python or sys.executable
+    script = session / "job.sbatch"
+    script.write_text(render_job_script(config, site, run_dir, python), encoding="utf-8")
+    script.chmod(0o755)
+    if _run_cmd(["bash", "-n", str(script)], session / "bash_syntax.log") != 0:
+        raise PipelineError(f"job script failed `bash -n`; see {display_path(session / 'bash_syntax.log')}")
+    log("INFO", f"job script rendered and syntax-checked: {display_path(script)}")
+    for w in warnings:
+        log("WARN", w)
+
+    details = {"log": display_path(session), "input_hash": input_hash, "site": site.fingerprint()}
+    hpc_update = {
+        "hpc": {
+            "nodes": config.hpc.nodes,
+            "ntasks": config.hpc.ntasks,
+            "walltime": config.hpc.walltime,
+            "partition": site.slurm.partition,
+            "account": site.slurm.account,
+            "modules": list(site.environment.modules),
+        }
+    }
+
+    if mode == "dryrun":
+        append_event(
+            run_dir,
+            "dryrun_completed",
+            "warn" if warnings else "ok",
+            "; ".join(warnings) or "Dry run passed.",
+            mode=mode,
+            details=details,
+        )
+        return PipelineResult(config.run_id, mode, True, "dry run passed", session_dir=session, warnings=warnings)
+
+    if mode == "smoke":
+        # Work on a copy so a smoke test never touches raw/ (a job may already be running there).
+        work = session / "smoke_workdir"
+        work.mkdir()
+        for name in INPUT_FILES:
+            shutil.copy2(run_dir / "inputs" / name, work / name)
+        env = dict(os.environ, HSOL_SMOKE_ONLY="1", HSOL_WORK_DIR=str(work))
+        shell = ["bash", "-l"] if site.environment.login_shell else ["bash"]
+        rc = _run_cmd([*shell, str(script)], session / "smoke_local.log", env=env)
+        if rc != 0:
+            raise PipelineError(
+                f"local smoke execution failed (rc={rc}); see {display_path(session / 'smoke_local.log')}"
+            )
+        log("INFO", "local smoke execution passed (modules, binary, launcher)")
+        if shutil.which("sbatch"):
+            rc = _run_cmd(["sbatch", "--test-only", str(script)], session / "sbatch_test_only.log")
+            if rc != 0:
+                raise PipelineError(
+                    f"`sbatch --test-only` rejected the job; see {display_path(session / 'sbatch_test_only.log')}"
+                )
+            log("INFO", "sbatch --test-only accepted the resource request")
+        else:
+            warnings.append("sbatch not found: scheduler validation skipped (are you on the cluster login node?)")
+            log("WARN", warnings[-1])
+        append_event(
+            run_dir,
+            "smoke_completed",
+            "warn" if warnings else "ok",
+            "; ".join(warnings) or "Smoke test passed.",
+            mode=mode,
+            details=details,
+            updates=hpc_update,
+        )
+        return PipelineResult(config.run_id, mode, True, "smoke test passed", session_dir=session, warnings=warnings)
+
+    # mode == "submit"
+    if not shutil.which("sbatch"):
+        raise PipelineError("sbatch not found in PATH")
+    copy_inputs_to_raw(run_dir)
+    submit_log = session / "sbatch_submit.log"
+    rc = _run_cmd(["sbatch", "--parsable", str(script)], submit_log)
+    output = submit_log.read_text(encoding="utf-8").splitlines()
+    if rc != 0:
+        raise PipelineError(f"sbatch failed (rc={rc}); see {display_path(submit_log)}")
+    job_id = output[-1].split(";")[0].strip() if len(output) > 1 else ""
+    if not job_id.isdigit():
+        raise PipelineError(f"could not read a job id from sbatch output; see {display_path(submit_log)}")
+    log("INFO", f"submitted as Slurm job {job_id}")
+    hpc_update["hpc"]["job_id"] = job_id
+    append_event(
         run_dir,
-        manifest=manifest_payload,
-        metrics=metrics_payload,
-        output_name=output_name,
+        "submitted",
+        "ok",
+        f"Slurm job {job_id}",
+        mode=mode,
+        details={**details, "job_id": job_id},
+        updates=hpc_update,
     )
-    return str(path)
+    write_metrics_status(run_dir, "submitted")
+    return PipelineResult(config.run_id, mode, True, f"submitted job {job_id}", job_id=job_id, session_dir=session)
 
 
-def extract_and_write_metrics(
-    run_dir: str,
-    *,
-    run_id: str | None = None,
-    outcar_rel: str = "raw/OUTCAR",
-    oszicar_rel: str = "raw/OSZICAR",
-) -> dict:
-    """Parse VASP outputs in a run directory and write `metrics.json`."""
+def write_metrics_status(run_dir: Path, status: str) -> None:
+    """Mark metrics.json with a workflow status (until real outputs are collected)."""
 
-    run_path = Path(run_dir).resolve()
-    payload = build_stage1_metrics_payload(
-        run_id=run_id or run_path.name,
-        outcar_path=(run_path / outcar_rel).resolve(),
-        oszicar_path=(run_path / oszicar_rel).resolve(),
-    )
-    payload["artifacts"]["outcar"] = outcar_rel
-    payload["artifacts"]["oszicar"] = oszicar_rel
-    write_metrics(str(run_path), payload)
-    write_report(str(run_path), metrics_payload=payload)
-    return payload
+    from .provenance import write_json
+    from .reporting import write_run_report
+
+    metrics = read_json(run_dir / "metrics.json")
+    metrics["status"] = status
+    write_json(run_dir / "metrics.json", metrics)
+    write_run_report(run_dir)

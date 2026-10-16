@@ -1,0 +1,53 @@
+# Stage 1a - ENCUT and k-point convergence of the pure hcp hosts.
+#
+#   hsol plan configs/campaigns/stage1_convergence.yaml
+#
+# Static single-point calculations on the 2-atom primitive cell at fixed (starting)
+# geometry. One parameter is varied at a time around the base point (ENCUT 500 eV,
+# k-point spacing 0.11 1/A); `hsol analyze convergence` then finds the cheapest
+# settings whose energy per atom is within 1 meV of the most accurate point.
+#
+# k-points are swept as a SPACING (1/A incl. 2*pi, like VASP's KSPACING): the same
+# rule later generates grids for supercells and hydrides, so the converged value
+# transfers exactly. For alpha-Y, 0.30 -> 7x7x4 and 0.07 -> 29x29x16.
+campaign: stage1_convergence
+stage: stage1
+description: ENCUT and k-point convergence for alpha-Y and alpha-Zr (primitive cells).
+include: [common_settings.yaml]
+
+defaults:
+  vasp:
+    incar:
+      ENCUT: 500          # base point of the k-point series
+      EDIFF: 1.0e-7       # tight SCF so sub-meV energy differences are meaningful
+      IBRION: -1          # no ionic motion
+      NSW: 0              # single point
+    kpoints:
+      spacing: 0.11       # base point of the ENCUT series
+  hpc:
+    nodes: 1
+    ntasks: 8
+    walltime: "00:30:00"
+
+systems:
+  Y:
+    structure:
+      builder: hcp_primitive
+      # Starting geometry only (Stage 1b relaxes it): room-temperature experiment,
+      # Spedding, Daane & Herrmann, Acta Cryst. 9, 559 (1956), doi:10.1107/S0365110X5600156X.
+      a_A: 3.647
+      c_A: 5.731
+      source: "experimental lattice (spedding1956_lattice) as starting geometry"
+  Zr:
+    structure:
+      builder: hcp_primitive
+      # Starting geometry only: Goldak, Lloyd & Barrett, Phys. Rev. 144, 478 (1966),
+      # doi:10.1103/PhysRev.144.478.
+      a_A: 3.232
+      c_A: 5.147
+      source: "experimental lattice (goldak1966_zr_lattice) as starting geometry"
+
+sweeps:
+  calc_type: host_convergence
+  encut_eV: [300, 350, 400, 450, 550, 600, 700]
+  kpoint_spacing: [0.30, 0.25, 0.20, 0.16, 0.13, 0.09, 0.07]

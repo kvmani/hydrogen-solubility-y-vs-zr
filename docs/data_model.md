@@ -1,121 +1,97 @@
-# Data Model (Baseline)
+# Data Model and Provenance
 
-This project requires machine-readable outputs per run. Two JSON files are mandatory from the start.
+Every calculation is one **run**: one directory, one id, one complete record.
 
-Config inputs for these outputs are validated against `docs/config_schema.md`.
+## Naming
 
-## 1) `manifest.json` (Provenance + Context)
+- **run_id** = `<system>_<stage>_<label>[_<tag>]`, e.g. `Y_stage2_hT`, `Zr_stage1_kspacing0.13`,
+  `H2_stage3_vib_molecule`, `Y_stage2_hT_v2`. The label comes from the campaign file; the optional
+  tag marks a re-run with changed physics. Ids are never reused for different physics.
+- **system**: `Y`, `Zr` or `H2` (gas reference). **stage**: `stage1` … `stage6` (see [Roadmap](roadmap.md)).
 
-Minimal schema:
-```json
-{
-  "run_id": "20260302_Y_stage1_dft_001",
-  "timestamp_utc": "2026-03-02T09:30:00Z",
-  "stage": "stage1",
-  "system": "Y",
-  "code": {
-    "engine": "VASP",
-    "version": "<required>",
-    "workflow_version": "0.1.0"
-  },
-  "git": {
-    "commit": "<hash>",
-    "dirty": false
-  },
-  "inputs": {
-    "config_path": "configs/<file>.yaml",
-    "functional": "PBE",
-    "potcar_labels": ["<label>"],
-    "encut_eV": 520,
-    "kmesh": "<kx,ky,kz>",
-    "smearing": "<scheme+value>"
-  },
-  "hpc": {
-    "scheduler": "slurm",
-    "job_id": "<id>",
-    "nodes": 1,
-    "ntasks": 32,
-    "walltime": "08:00:00",
-    "submission": {
-      "sbatch_script": "results/runs/<run_id>/logs/slurm/<run_id>_<timestamp>.sbatch",
-      "submit_command": "sbatch ...",
-      "pipeline_log": "results/runs/<run_id>/logs/orchestrator/<timestamp>_<mode>/pipeline.log",
-      "submission_recorded_utc": "2026-03-02T10:00:00Z"
-    }
-  },
-  "paths": {
-    "run_dir": "results/runs/<run_id>",
-    "raw_dir": "results/runs/<run_id>/raw",
-    "parsed_dir": "results/runs/<run_id>/parsed"
-  },
-  "execution_events": [
-    {
-      "timestamp_utc": "2026-03-02T09:40:00Z",
-      "event": "dryrun_completed",
-      "status": "ok",
-      "mode": "dryrun",
-      "message": "Dry-run completed successfully.",
-      "log_path": "results/runs/<run_id>/logs/orchestrator/<timestamp>_dryrun/pipeline.log"
-    }
-  ],
-  "last_update_utc": "2026-03-02T10:00:00Z"
-}
+## Repository layout
+
+```text
+configs/campaigns/        campaign files (the scientific source of truth, committed)
+configs/generated/        run configs written by `hsol plan` (derived, not committed)
+configs/site.yaml         cluster settings (personal, not committed)
+results/runs/<run_id>/    one directory per run (see below)
+results/INDEX.md          overview of all runs with links to reports  (hsol status)
+results/index.csv         same, machine-readable
+results/analysis/         convergence/ and solubility/ outputs           (hsol analyze)
+results/batch_logs/       per-invocation summaries of `hsol run`        (not committed)
 ```
 
-## 2) `metrics.json` (Numerical Outputs + Checks)
+## Run directory
 
-Minimal schema:
-```json
-{
-  "run_id": "20260302_Y_stage1_dft_001",
-  "status": "success",
-  "energetics": {
-    "total_energy_eV": -123.456,
-    "energy_per_atom_eV": -6.1728,
-    "formation_energy_eV": null,
-    "h_solution_energy_eV": null,
-    "oszicar_final_e0_eV": -123.200
-  },
-  "checks": {
-    "electronic_converged": true,
-    "ionic_converged": true,
-    "encut_converged": null,
-    "kmesh_converged": null
-  },
-  "artifacts": {
-    "outcar": "raw/OUTCAR",
-    "oszicar": "raw/OSZICAR",
-    "summary_table": "parsed/summary.csv"
-  },
-  "notes": "placeholder"
-}
+```text
+results/runs/<run_id>/
+  inputs/config.yaml      exact config used (snapshot)
+  inputs/INCAR KPOINTS POSCAR POTCAR
+  raw/                    VASP working directory: OUTCAR, OSZICAR, CONTCAR, vasp.out, ...
+  logs/<UTC>_<mode>/      pipeline.log, job.sbatch, smoke/sbatch logs of each invocation
+  logs/slurm-<job>.out|err
+  attempts/<UTC>/         previous raw/ directories archived by --resubmit
+  manifest.json           provenance and event history
+  metrics.json            parsed results and checks
+  report.html             human-readable summary of the above
 ```
 
-Extraction note:
-- `tools/extract_metrics.py` populates this structure from `raw/OUTCAR` and `raw/OSZICAR`.
+## `manifest.json`
 
-## Human Report Requirement
-Each run should include a concise human-readable `report.html` summarizing:
-- objective and config
-- key energies/derived quantities
-- convergence evidence
-- pass/fail decisions and next action
+Written by `prepare`, then only appended to.
 
-Current implementation:
-- `tools/init_run.py` now emits an initial `report.html`.
-- `tools/extract_metrics.py --run-dir ...` refreshes `report.html` after parsing outputs.
-- `tools/generate_run_report.py --run-dir ...` can regenerate from existing JSON artifacts.
+| Field | Content |
+|---|---|
+| `run_id`, `stage`, `system`, `calc_type`, `campaign`, `objective`, `sweep` | identity |
+| `config` | source path of the config and `sha256` of its physics-relevant part |
+| `inputs` | SHA-256 of INCAR/KPOINTS/POSCAR/POTCAR and their combined `input_hash` |
+| `potcars` | per element: label, TITEL, ENMAX, SHA-256, source path |
+| `structure` | builder, composition, lattice, supercell, H site, k-grid and spacing, parent runs (with CONTCAR hashes) |
+| `git` | commit, branch, dirty flag at prepare time |
+| `environment` | workflow version, Python, host, platform |
+| `vasp.version` | from OUTCAR, filled in by `collect` |
+| `hpc` | nodes, ntasks, walltime, partition, account, modules, `job_id` |
+| `events` | list of `{timestamp_utc, event, status, mode, message, details}` |
 
-## Major-Update Presentation Requirement
-For major result sets/feature additions, generate and version:
-- a deck manifest JSON (`presentations/*_manifest.json`)
-- a `.pptx` deck (`presentations/*.pptx`)
-- a `.pdf` export (`presentations/*.pdf`)
+Events: `prepared`, `inputs_regenerated`, `config_snapshot_updated`, `prepare_warnings`,
+`dryrun_completed`, `smoke_completed`, `submitted`, `resubmit_archived`, `<mode>_failed`,
+`collected`. A smoke event stores the `input_hash` and site fingerprint it validated; `submit`
+refuses unless they match the current ones.
 
-## Bootstrap Status Convention
-When a run is initialized via `tools/init_run.py`, starter metrics should use:
-- `status: "initialized"`
+## `metrics.json`
 
-This status must be replaced with execution outcomes (e.g., `success`, `failed`) after parsing real VASP outputs.
+Written by `prepare` (status only) and `collect`.
 
-Parser may also emit `status: "partial"` when energies are available but convergence cannot be fully confirmed.
+| Field | Content |
+|---|---|
+| `status` | `prepared`, `submitted`, `not_started`, `incomplete`, `unconverged`, `converged` |
+| `problems` | reasons the run is not `converged` |
+| `warnings` | physics flags that do not fail the run (H left its site, imaginary modes) |
+| `checks` | `completed_normally`, `electronic_converged`, `ionic_converged` (relaxations), `vibrations_parsed` (finite differences); `null` = not applicable |
+| `energetics` | `energy_sigma0_eV` (headline energy), `free_energy_eV` (TOTEN), `energy_per_atom_eV` |
+| `calculation` | VASP version, NIONS, ionic steps, SCF steps of the last ionic step, NELM, max force, pressure, elapsed time |
+| `structure_check` | from CONTCAR: volume/atom; `a_A`, `c_A`, `c_over_a` (host relax); `requested_site`, `final_site`, `site_preserved` (H interstitial); cell lengths (hydride) |
+| `vibrations` | `n_modes`, `n_imaginary`, `modes` (meV, cm⁻¹, imaginary flag) |
+
+Convergence is judged from evidence: VASP's final timing block must exist; the last ionic step must
+finish its SCF in fewer than NELM steps; relaxations must report "reached required accuracy".
+
+## What to commit
+
+Commit campaign files together with the results they produced: `manifest.json`, `metrics.json`,
+`report.html`, `inputs/` (POTCAR is ignored automatically), `raw/OUTCAR`, `OSZICAR`, `CONTCAR`,
+`vasp.out`, `logs/`, plus `results/INDEX.md`, `results/index.csv` and `results/analysis/`.
+`.gitignore` excludes POTCAR (licence) and large regenerable files (WAVECAR, CHGCAR, CHG,
+vasprun.xml, PROCAR, DOSCAR, LOCPOT, ELFCAR). If OUTCARs become too large for git, archive them
+next to the clone and keep their SHA-256 in a progress note.
+
+## Analysis outputs
+
+| Path | Content |
+|---|---|
+| `results/analysis/convergence/summary.md` | ENCUT and k-spacing tables, recommended settings (paste into `converged_settings.yaml`) |
+| `results/analysis/convergence/convergence_table.csv`, `encut.png`, `kpoints.png` | data and plots |
+| `results/analysis/solubility/summary.md` | site energetics, ZPE, ΔG(T), solubility-limit gap, TSS ratio, runs used, missing inputs, assumptions |
+| `results/analysis/solubility/site_energetics.csv` | per system and site: static ΔE, ΔZPE, ΔG at 300/600/900 K |
+| `results/analysis/solubility/solubility_vs_T.csv`, `solubility.png` | x_H(T) at the requested pressures, TSS (H/M and wppm), plateau pressure |

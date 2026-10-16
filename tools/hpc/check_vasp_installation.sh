@@ -90,13 +90,17 @@ run_smoke_case() {
 
   mkdir -p "$smoke_dir"
 
-  cat > "$smoke_dir/POSCAR" <<'POS'
-VASP smoke check (Al, 1 atom)
+  # One atom of whatever element the POTCAR describes, in a 4.05 A cubic cell:
+  # not physical, just enough to prove that VASP starts, iterates and exits cleanly.
+  local element
+  element="$(sed -n 's/^ *TITEL *= *[^ ]* *\([A-Za-z]*\).*/\1/p' "$POTCAR_PATH" | head -n 1)"
+  cat > "$smoke_dir/POSCAR" <<POS
+VASP smoke check (${element:-X}, 1 atom)
 1.0
 4.05 0.00 0.00
 0.00 4.05 0.00
 0.00 0.00 4.05
-Al
+${element:-X}
 1
 Direct
 0.0 0.0 0.0
@@ -247,10 +251,12 @@ if [[ ${#MODULES[@]} -gt 0 ]]; then
   }
 
   log "INFO" "Loading modules: ${MODULES[*]}"
+  set +u  # module init scripts often reference unset variables
   module purge >/dev/null 2>&1 || true
   for mod in "${MODULES[@]}"; do
     module load "$mod"
   done
+  set -u
 fi
 
 if [[ ${#MODULES[@]} -gt 0 ]]; then
@@ -282,23 +288,17 @@ else
   log "WARN" "Neither ldd nor otool found; skipping shared-library inspection"
 fi
 
-VERSION_PROBE="unsupported"
-set +e
-"$VASP_BINARY" --version > "$WORKDIR/version_probe.log" 2>&1
-version_rc=$?
-set -e
-if [[ "$version_rc" -eq 0 ]]; then
-  VERSION_PROBE="ok"
-  log "INFO" "--version probe succeeded"
-else
-  log "WARN" "--version probe not supported (this is common for some VASP builds)"
-fi
+# Note: VASP has no --version flag (it ignores arguments and starts a calculation in
+# the current directory), so the version is read from the smoke run's OUTCAR instead.
+VASP_VERSION="unknown (run with --run-smoke true)"
 
 SMOKE_STATUS="skipped"
 if [[ "$RUN_SMOKE" == "true" ]]; then
   SMOKE_STATUS="failed"
   if run_smoke_case "$WORKDIR/smoke_case"; then
     SMOKE_STATUS="ok"
+    VASP_VERSION="$(sed -n '1s/^ *vasp\.\([^ ]*\).*/\1/p' "$WORKDIR/smoke_case/OUTCAR")"
+    log "INFO" "VASP version: ${VASP_VERSION:-unknown}"
   else
     SMOKE_STATUS="failed"
     exit 5
@@ -313,7 +313,7 @@ cat > "$SUMMARY_JSON" <<JSON
   "vasp_path": "$VASP_PATH",
   "modules": $MODULES_JSON,
   "library_check": "$LIB_STATUS",
-  "version_probe": "$VERSION_PROBE",
+  "vasp_version": "$VASP_VERSION",
   "smoke_status": "$SMOKE_STATUS",
   "workdir": "$WORKDIR"
 }

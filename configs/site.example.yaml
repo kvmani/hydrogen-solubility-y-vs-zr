@@ -1,0 +1,29 @@
+# Cluster-specific settings shared by every run.
+#
+#   cp configs/site.example.yaml configs/site.yaml    # then edit configs/site.yaml
+#   ./hsol doctor                                     # checks what is still missing
+#
+# configs/site.yaml is ignored by git: it holds your account and local paths.
+# Unsure about module names? Run tools/hpc/discover_vasp_modules.sh on the login node.
+
+slurm:
+  partition: "<partition>"        # sinfo -s lists partitions
+  account: "<account>"            # your allocation/project (sacctmgr show assoc user=$USER)
+  extra_directives: []            # extra #SBATCH options, e.g. ["--qos=normal", "--constraint=cpu"]
+
+environment:
+  login_shell: false              # true -> jobs use `bash -l` (if `module` is unknown inside jobs)
+  module_purge: true              # start each job from a clean module environment
+  modules: []                     # loaded in this order, e.g. [intel/2023.2, impi/2021.10, vasp/6.4.2]
+  setup_commands: []              # extra shell lines before VASP, e.g. ["ulimit -s unlimited"]
+
+vasp:
+  launch_command: "srun"          # or "mpirun -np $SLURM_NTASKS" (expanded inside the job)
+  binary_std: vasp_std            # standard k-point executable
+  binary_gam: vasp_gam            # Gamma-only executable (only used if a config sets binary: gam)
+  potcar_root: null               # folder containing Y_sv/POTCAR, Zr_sv/POTCAR, H/POTCAR (PBE PAW)
+
+paths:
+  results_root: results/runs      # where run directories go; may be an absolute path on /scratch
+
+python: null                      # Python used inside jobs for automatic `hsol collect` (default: current)

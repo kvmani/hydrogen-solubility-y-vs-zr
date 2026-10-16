@@ -1,0 +1,46 @@
+# Stage 1b - relax the hcp lattice parameters (a, c) at the converged settings.
+#
+#   hsol plan configs/campaigns/stage1_relax.yaml     (needs converged_settings.yaml filled in)
+#
+# Every later supercell is built from these relaxed lattices (lattice_from_run), so
+# all Stage 2 energies refer to the PBE equilibrium volume of each metal.
+# Note: the plane-wave basis is fixed at the starting volume; with ENCUT >= 1.3 x
+# ENMAX (checked by `hsol prepare`) the resulting Pulay stress is negligible.
+campaign: stage1_relax
+stage: stage1
+description: Full cell relaxation (ISIF=3) of alpha-Y and alpha-Zr.
+include: [common_settings.yaml, converged_settings.yaml]
+
+defaults:
+  vasp:
+    incar:
+      EDIFF: 1.0e-7
+      # POSITIVE EDIFFG = stop on energy change. Forces in perfect hcp vanish by
+      # symmetry, so a negative (force) criterion would stop before the cell relaxes.
+      EDIFFG: 1.0e-6
+      IBRION: 2           # conjugate gradient
+      ISIF: 3             # relax ions, cell shape and volume
+      NSW: 60
+  hpc:
+    nodes: 1
+    ntasks: 8
+    walltime: "01:00:00"
+
+systems:
+  Y:
+    structure:
+      builder: hcp_primitive
+      a_A: 3.647
+      c_A: 5.731
+      source: "experimental lattice (spedding1956_lattice) as starting geometry"
+  Zr:
+    structure:
+      builder: hcp_primitive
+      a_A: 3.232
+      c_A: 5.147
+      source: "experimental lattice (goldak1966_zr_lattice) as starting geometry"
+
+runs:
+  - label: relax
+    calc_type: host_relax
+    objective: "Relax the alpha-{system} lattice parameters (a, c) at converged ENCUT and k-point spacing."

@@ -1,49 +1,37 @@
 # Agent And Collaborator Contract
 
-## Purpose
-Define how Codex and human collaborators produce reproducible, research-grade outputs in this repository.
+Rules for humans and coding agents working in this repository.
 
-## Output Contract (Every Substantive Task)
-- Update relevant docs first or in the same change set.
-- Keep workflows config-driven; avoid hard-coded one-off parameters.
-- Emit or update machine-readable provenance artifacts when running computations.
-- Report what changed, what was validated, and what remains open.
- - For major results or feature additions, generate dissemination artifacts in `presentations/` (`.pptx` and `.pdf`) for review, but do not commit the generated binaries.
-- Build-check the docs site when the change touches workflow, science, provenance, or public API surface.
+## Every substantive change
 
-## Documentation-First Rules
-- `docs/` is the primary interface; implementation follows documented contracts.
-- Any change to run behavior must update:
-  - `docs/conventions.md` if naming/layout/provenance changes.
-  - `docs/data_model.md` if output JSON structures change.
-  - `docs/roadmap.md` if stage gates or sequencing changes.
-- Factual scientific claims require primary-source or authoritative citations.
-- `docs/index.md` is the Sphinx landing page and the canonical navigation hub.
-- Scientific-method changes should update `docs/scientific_foundation.md` and, if manuscript-facing, `docs/manuscript_blueprint.md`.
-- Algorithm or parser changes should update `docs/computational_workflow.md` and `docs/api_reference.md` if the exported surface changes.
-- New claims and reference anchors should be added to `literature/lit_review.md` and `literature/library.bib` in the same change set.
+- Keep work config-driven: physics lives in `configs/campaigns/`, cluster settings in
+  `configs/site.yaml`; code contains no hidden scientific defaults.
+- Update the matching docs in the same change set (table below) and run `make check`
+  (lint, tests, docs build) before merging.
+- Report what changed, what was validated, and what remains open; record decisions in `progress/`.
+- Major results get a lab-meeting deck via `tools/presentation/`; generated decks are not committed.
 
-## Reproducibility Expectations
-- Every run gets a unique `run_id` and dedicated results folder.
-- Required per-run artifacts:
-  - input snapshot
-  - `manifest.json`
-  - `metrics.json`
-  - logs
-- Frontend `dryrun` and `smoke` checks are mandatory before `submit` mode.
-- Workflow execution should use `tools/hpc/run_vasp_pipeline.sh` (single) or `tools/hpc/run_vasp_batch.sh` (batch) unless a documented exception is approved.
-- Every pipeline invocation must append an event to `manifest.json` (`execution_events`) and store session logs under `results/runs/<run_id>/logs/orchestrator/`.
-- Future tasks must also produce an HTML run report for human inspection.
-- Major milestone reports should include a slide deck pair in `presentations/` for inspection, but the generated `.pptx` and `.pdf` files are treated as build artifacts and left untracked.
+| If you change… | also update |
+|---|---|
+| a campaign/config key or schema | `docs/config_schema.md` |
+| run layout, manifest or metrics fields | `docs/data_model.md` |
+| commands or their order | `docs/workflow.md`, `README.md` |
+| equations, assumptions, interpretation | `docs/scheme.md`, `docs/scientific_foundation.md` |
+| stage gates or priorities | `docs/roadmap.md` |
+| a scientific claim or reference | `literature/lit_review.md`, `literature/library.bib` |
 
-## Config-Driven Workflow Policy
-- All operational settings must come from `configs/` files (or explicit defaults documented in code/docs).
-- Scripts in `tools/` and package code in `src/` must accept config paths/IDs, not embedded constants.
-- Config changes should be reviewable diffs and traceable to run IDs.
+## Reproducibility
 
-## Collaboration Hygiene
-- Do not rewrite history of previous runs; append corrections with new run IDs.
-- Keep `progress/` as a living record of decisions, assumptions, and blockers.
-- Flag unresolved scientific ambiguity explicitly; do not hide uncertainty.
-- Keep presentation source notes and deck generation inputs reproducible; do not rely on committing generated slide binaries for traceability.
-- Keep the documentation build green. If a change affects scientific reasoning or workflow semantics, update the docs before closing the task.
+- Every calculation is a run with a unique id and directory created by `hsol prepare`; one-off
+  manual VASP runs do not count as evidence.
+- Slurm work goes through `hsol run` in the order `dryrun → smoke → submit` (enforced).
+- Never overwrite a run: changed physics gets a new id via the campaign `tag`.
+- Never edit generated files (`configs/generated/`, `results/runs/*/inputs/`) by hand.
+- Never commit POTCAR files or `configs/site.yaml`.
+
+## Scientific hygiene
+
+- Factual claims need primary-source or authoritative citations (DOI) in `literature/library.bib`.
+- Only `converged` runs feed analyses; state uncertainty and model assumptions explicitly.
+- Y and Zr are always computed with identical settings (`common_settings.yaml`,
+  `converged_settings.yaml`).

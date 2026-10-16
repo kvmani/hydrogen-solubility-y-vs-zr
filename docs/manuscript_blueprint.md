@@ -78,7 +78,7 @@ That is the core claim tree. Everything else in the project exists to support it
 | Y stores more H than Zr in the dilute regime | literature anchors + computed site free energies | `literature/lit_review.md`, `docs/scientific_foundation.md` |
 | Static DFT is not enough | vibrational corrections and finite-T free energies | `docs/scientific_foundation.md` |
 | Zr hydride competition truncates the dilute regime | hydride free-energy comparisons | `docs/scientific_foundation.md`, `docs/roadmap.md` |
-| The workflow is reproducible | run manifests, metrics, and HTML reports | `docs/provenance_and_contract.md` |
+| The workflow is reproducible | run manifests, metrics, and HTML reports | `docs/data_model.md`, `results/INDEX.md` |
 
 ## Figure And Table Plan
 

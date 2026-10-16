@@ -1,79 +1,72 @@
-# First-principles explanation of hydrogen solubility contrast in Y vs Zr
+# Hydrogen solubility in α-Y vs α-Zr from first principles
 
-Documentation-first, reproducible research scaffold for building a quantitatively defensible DFT + thermodynamics explanation of why hydrogen solubility is much higher in yttrium than in zirconium.
+Why does yttrium dissolve far more hydrogen than zirconium? This repository answers that with a
+reproducible chain of VASP calculations and a thermodynamic model: host convergence → relaxed
+lattices → H in tetrahedral/octahedral sites → zero-point and vibrational free energies →
+hydride competition → solubility limit (TSS) for both metals with identical settings.
 
-## Start Here
-- Canonical Sphinx docs site: `docs/index.md`
-- Mission and scientific scope: `docs/mission.md` and `mission_goals.md`
-- Collaboration contract for Codex/humans: `docs/collaboration_contract.md` and `agents.md`
-- Execution plan and stage gates: `docs/roadmap.md`
-- Scientific foundation and equations: `docs/scientific_foundation.md`
-- Workflow and algorithm map: `docs/computational_workflow.md`
-- Provenance contract and artifact semantics: `docs/provenance_and_contract.md`
-- Manuscript blueprint: `docs/manuscript_blueprint.md`
-- VASP primer (concepts + workflow): `docs/vasp_primer.md`
-- End-to-end VASP execution guide (inputs + HPC + analysis): `docs/vasp_simulation_guide.md`
-- Local/HPC bootstrap: `docs/getting_started.md`
-- Stage-1 campaign guide: `docs/stage1_campaign.md`
-- Beginner VASP tutorial: `hpc/beginner_vasp_tutorial.md`
-- Module discovery tutorial: `hpc/vasp_module_discovery_tutorial.md`
-- Slurm/VASP operator tutorial: `hpc/runbook.md`
-- Literature map and bibliography: `literature/lit_review.md`, `literature/library.bib`
-- Machine-readable literature benchmarks: `literature/benchmarks/`
+One command, `./hsol`, prepares every input, runs Slurm jobs safely (dryrun → smoke → submit),
+collects results with full provenance and performs the analysis.
 
-## Repository Layout
-- `docs/`: roadmap, conventions, data contracts, onboarding
-- `literature/`: curated references, BibTeX, evidence map
-- `hpc/`: VASP/SLURM templates and runbook
-- `configs/`: run-time configuration files (YAML/JSON)
-- `src/`: analysis package
-- `tools/`: CLI utilities and orchestration scripts
-- `results/`: run artifacts under strict run-ID layout
-- `presentations/`: slide decks and figures for reporting
-- `progress/`: living logs and decision records
+## Quick start
 
-## Reproducibility Principles
-- Every computational run must be config-driven and emit `manifest.json` + `metrics.json`.
-- Every computational run should also emit/update `report.html` for fast human QA.
-- Slurm execution must follow `dryrun -> smoke -> submit`.
-- Factual claims in docs must cite primary sources (DOI or authoritative handbook).
-- Human-readable run reports (HTML) are required for each completed run in later tasks.
-- Major updates should also generate dissemination decks (`.pptx` + `.pdf`) in `presentations/` for review; the rendered files are ignored by git.
-- Documentation changes should be build-checked with `make docs-check` before merge.
+```bash
+pip install -r requirements.txt                    # Python >= 3.9: pyyaml, pydantic, matplotlib
+cp configs/site.example.yaml configs/site.yaml     # cluster settings: partition, account, modules, POTCARs
+./hsol doctor                                      # lists anything still missing
 
-## Quick Commands
-- Build the Sphinx docs:
-  - `pip install -r requirements-docs.txt`
-  - `python -m sphinx -W -b html docs docs/_build/html`
-- Validate configs:
-  - `python tools/validate_config.py configs/stage1_y_host_validation_v1.yaml configs/stage1_zr_host_validation_v1.yaml`
-- Preflight scheduler readiness (placeholders/validation):
-  - `python tools/hpc/preflight_scheduler_configs.py --fail-if-unready configs/stage1_y_host_validation_v1.yaml configs/stage1_zr_host_validation_v1.yaml`
-- Patch scheduler placeholders in bulk:
-  - `python tools/hpc/preflight_scheduler_configs.py --set-partition <partition> --set-account <account> --write configs/stage1_y_host_validation_v1.yaml configs/stage1_zr_host_validation_v1.yaml`
-  - `make hpc-patch-scheduler HPC_PARTITION=<partition> HPC_ACCOUNT=<account>`
-- Preflight run input decks before batch launch:
-  - `python tools/hpc/preflight_input_decks.py --require-potcar true --fail-if-unready configs/stage1_y_host_validation_v1.yaml configs/stage1_zr_host_validation_v1.yaml`
-  - `make hpc-preflight-inputs`
-- Run combined preflight gates:
-  - `make hpc-preflight-all`
-- Generate Stage-1 convergence campaign:
-  - `make plan-stage1`
-- Initialize run folders/artifacts:
-  - `python tools/init_run.py configs/stage1_y_host_validation_v1.yaml`
-- Discover candidate VASP modules:
-  - `tools/hpc/discover_vasp_modules.sh --keyword vasp`
-- VASP health check (quick):
-  - `tools/hpc/check_vasp_installation.sh --module <compiler_module> --module <mpi_module> --module <vasp_module>`
-- VASP health check (smoke):
-  - `tools/hpc/check_vasp_installation.sh --module <compiler_module> --module <mpi_module> --module <vasp_module> --run-smoke true --potcar /path/to/POTCAR --launch-cmd "srun -n 1"`
-- Frontend dry-run:
-  - `tools/hpc/run_vasp_pipeline.sh --mode dryrun --config configs/stage1_y_host_validation_v1.yaml`
-- Frontend smoke test:
-  - `tools/hpc/run_vasp_pipeline.sh --mode smoke --config configs/stage1_y_host_validation_v1.yaml --compiler-module <compiler_module> --mpi-module <mpi_module> --vasp-module <vasp_module>`
-- Parse VASP outputs to metrics:
-  - `python tools/extract_metrics.py --run-dir results/runs/<run_id>`
-- Regenerate run HTML report from JSON artifacts:
-  - `python tools/generate_run_report.py --run-dir results/runs/<run_id>`
-- Generate update deck:
-  - `python tools/presentation/generate_lab_meeting_ppt.py --scan-root results --output-dir presentations --deck-title "Y vs Zr Update" --require-pdf`
+./hsol plan    configs/campaigns/stage1_convergence.yaml
+./hsol prepare configs/generated/stage1_convergence
+./hsol run --mode dryrun configs/generated/stage1_convergence
+./hsol run --mode smoke  configs/generated/stage1_convergence
+./hsol run --mode submit configs/generated/stage1_convergence
+./hsol status                                      # progress board; also writes results/INDEX.md
+./hsol analyze convergence                         # -> paste result into configs/campaigns/converged_settings.yaml
+```
+
+Then repeat plan → prepare → run for `stage1_relax`, `stage2_h_energetics`, `stage3_vibrations`,
+`stage4_hydrides`, `stage4_hydride_vibrations`, and finish with `./hsol analyze solubility`.
+
+## Documentation
+
+| Document | Use it for |
+|---|---|
+| [docs/workflow.md](docs/workflow.md) | **the commands**, stage by stage, statuses, troubleshooting |
+| [docs/hpc_setup.md](docs/hpc_setup.md) | one-time cluster setup (modules, POTCARs, `site.yaml`) |
+| [docs/scheme.md](docs/scheme.md) | **the science**: which calculation feeds which equation, assumptions |
+| [docs/roadmap.md](docs/roadmap.md) | stages, gates, open items |
+| [docs/config_schema.md](docs/config_schema.md), [docs/data_model.md](docs/data_model.md) | config keys; run directories, manifests, metrics |
+| [docs/dft_introduction.md](docs/dft_introduction.md), [docs/vasp_primer.md](docs/vasp_primer.md) | DFT/VASP background for beginners |
+| [mission_goals.md](mission_goals.md), [agents.md](agents.md) | scope and collaboration rules |
+
+The same pages form a Sphinx site: `pip install -r requirements-docs.txt && make docs`.
+
+## Repository layout
+
+```text
+hsol                    command-line entry point (./hsol --help)
+configs/campaigns/      what to compute, one file per stage (edit these)
+configs/site.yaml       your cluster settings (from site.example.yaml; not in git)
+src/hydrogen_solubility/  the Python package behind hsol
+results/runs/<run_id>/  one directory per calculation: inputs, raw outputs, manifest, metrics, report
+results/INDEX.md        overview of all runs with links to their reports
+results/analysis/       convergence and solubility results
+literature/             bibliography, annotated review, experimental benchmarks
+tools/hpc/              VASP module discovery and installation check
+tools/presentation/     lab-meeting slide generator
+progress/               dated decision records
+tests/                  pytest suite (make check)
+```
+
+## Guarantees the workflow gives you
+
+- Every INCAR/KPOINTS/POSCAR is generated from a reviewed campaign file; nothing is hand-edited.
+- Y and Zr share one set of physics settings (`configs/campaigns/common_settings.yaml`).
+- Nothing is submitted unless a smoke test passed for exactly the current inputs and cluster settings.
+- Results are never overwritten: changed physics requires a new run id.
+- Each run records git commit, input hashes, POTCAR identities, VASP version, job ids and an event
+  history, and gets a human-readable `report.html`.
+
+## Development
+
+`make check` runs lint, the test suite and a strict docs build (also run by CI on every push).

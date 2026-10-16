@@ -78,7 +78,7 @@ k_B T \ln\left(1 - e^{-\hbar\omega_i / k_B T}\right)
  \right].
 $$
 
-This is the baseline expression that stage-3 calculations will use when the project expands beyond host validation.
+Stage 3 evaluates it for the hydrogen modes (metal atoms fixed), and `hsol analyze solubility` uses it for dissolved H, for H in the hydride and for the H₂ stretch.
 
 ## Hydride Competition
 
@@ -91,18 +91,26 @@ $$
 = G(\mathrm{MH}_y, T) - G(\mathrm{M}, T) - \tfrac{y}{2}\mu_{H_2}^{\mathrm{gas}}(T, p),
 $$
 
-where \(M\) is Y or Zr. If the hydride free energy becomes negative relative to the host-plus-gas reference, the system prefers hydride formation over continued dilute dissolution.
+where $M$ is Y or Zr. If the hydride free energy becomes negative relative to the host-plus-gas reference, the system prefers hydride formation over continued dilute dissolution.
 
-This is the thermodynamic reason the Zr system is expected to truncate the dilute regime earlier than Y. The experimental phase assessments in the literature support that qualitative difference, and the project’s goal is to quantify it from first principles rather than assume it.
+The solubility limit itself follows from coexistence: dissolved hydrogen and hydrogen in the hydride must have the same chemical potential. With $\Delta g_{\mathrm{hyd}} = \Delta G_{\mathrm{hydride}}/y$ per H atom (gas reference removed), the terminal solid solubility is
+
+$$
+x_{\mathrm{TSS}}(T) = \sum_s \frac{n_s}{1+\exp\left[(\Delta g_s(T) - \Delta g_{\mathrm{hyd}}(T))/k_B T\right]},
+$$
+
+which no longer depends on the gas pressure. The gap $\Delta g_s - \Delta g_{\mathrm{hyd}}$ is therefore the single number that sets the TSS of each metal ([Scheme](scheme.md) lists all terms and the calculations that provide them).
+
+Hypothesis H3 of the literature review is that this gap is much larger in Zr, so hydride precipitation truncates the dilute regime earlier than in Y. The phase assessments support the qualitative difference; the project quantifies it from first principles rather than assuming it.
 
 ## What Must Be Computed
 
 The project’s scientific model needs four outputs:
 
-1. host reference energies for alpha-Y and alpha-Zr,
-2. dilute-H site energies and site hierarchy,
-3. vibrational corrections for host and host-plus-H states,
-4. competing hydride free energies and phase windows.
+1. host reference energies for alpha-Y and alpha-Zr (Stage 1),
+2. dilute-H site energies and site hierarchy (Stage 2),
+3. vibrational corrections for H in the host, in the hydride and in H₂ (Stages 3 and 4b),
+4. competing hydride free energies (Stage 4a).
 
 That chain is what eventually converts VASP energies into a prediction for $c_H(T, p)$.
 

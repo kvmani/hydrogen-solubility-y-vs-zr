@@ -1,62 +1,40 @@
 # API Reference
 
-The Python package is intentionally small. The API reference documents the exact functions and classes that underpin the workflow contract.
+The command line (`hsol`, module `hydrogen_solubility.cli`) is a thin layer over these modules,
+which can also be imported in notebooks and tests.
 
-## Package Overview
+| Module | Role |
+|---|---|
+| `config_models` | run-config and site-config schemas, loading and validation |
+| `planner` | campaign file → run configs (`hsol plan`) |
+| `structures` | hcp, interstitial, H₂ and fluorite builders; POSCAR I/O; k-point spacing |
+| `vasp_inputs` | INCAR/KPOINTS writers, POTCAR assembly and identity |
+| `run_bootstrap` | run directories, inputs and manifest (`hsol prepare`) |
+| `pipeline` | dryrun → smoke → submit on Slurm (`hsol run`) |
+| `vasp_metrics` | OUTCAR/OSZICAR parsing and convergence assessment |
+| `results_index` | `hsol collect`, `hsol status`, run lookup |
+| `convergence` | Stage-1a analysis |
+| `thermo` | harmonic free energies, ideal-gas H₂, lattice-gas occupancies |
+| `solubility` | Stage-5 model (`hsol analyze solubility`) |
+| `provenance`, `reporting`, `paths` | hashes and events, `report.html`, repository locations |
 
-```{automodule} hydrogen_solubility
-:members:
-:undoc-members:
-:show-inheritance:
+```{eval-rst}
+.. autosummary::
+   :toctree: _autosummary
+
+   hydrogen_solubility.config_models
+   hydrogen_solubility.planner
+   hydrogen_solubility.structures
+   hydrogen_solubility.vasp_inputs
+   hydrogen_solubility.run_bootstrap
+   hydrogen_solubility.pipeline
+   hydrogen_solubility.vasp_metrics
+   hydrogen_solubility.results_index
+   hydrogen_solubility.convergence
+   hydrogen_solubility.thermo
+   hydrogen_solubility.solubility
+   hydrogen_solubility.provenance
+   hydrogen_solubility.reporting
+   hydrogen_solubility.paths
+   hydrogen_solubility.cli
 ```
-
-## Configuration Models
-
-```{automodule} hydrogen_solubility.config_models
-:members:
-:undoc-members:
-:show-inheritance:
-```
-
-## Workflow Pipeline
-
-```{automodule} hydrogen_solubility.pipeline
-:members:
-:undoc-members:
-:show-inheritance:
-```
-
-## Run Bootstrap
-
-```{automodule} hydrogen_solubility.run_bootstrap
-:members:
-:undoc-members:
-:show-inheritance:
-```
-
-## VASP Metrics Parsing
-
-```{automodule} hydrogen_solubility.vasp_metrics
-:members:
-:undoc-members:
-:show-inheritance:
-```
-
-## Reporting Utilities
-
-```{automodule} hydrogen_solubility.reporting
-:members:
-:undoc-members:
-:show-inheritance:
-```
-
-## Command-Line Entry Points
-
-- `python tools/validate_config.py <config-path>`
-- `python tools/init_run.py <config-path>`
-- `python tools/extract_metrics.py --run-dir results/runs/<run_id>`
-- `python tools/generate_run_report.py --run-dir results/runs/<run_id>`
-- `python tools/plan_stage1_campaign.py --base-config ...`
-- `tools/hpc/run_vasp_pipeline.sh --mode dryrun|smoke|submit --config <config>`
-
-These scripts are thin wrappers around the package modules above. The thin-wrapper pattern keeps orchestration explicit and makes the reusable logic importable in tests or future notebooks.

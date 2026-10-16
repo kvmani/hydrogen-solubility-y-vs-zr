@@ -1,22 +1,11 @@
 # tools/hpc/
 
-## Purpose
-Provide robust, scriptable orchestration for VASP workflows on Slurm with dry-run-first safety and rich diagnostics.
+One-time cluster helpers (the run pipeline itself is `./hsol run`):
 
-## Goes In
-- `discover_vasp_modules.sh`: module and binary discovery report generator
-- `check_vasp_installation.sh`: frontend-node VASP availability + smoke validator
-- `preflight_scheduler_configs.py`: scheduler-readiness audit + optional placeholder patching for config sets
-- `preflight_input_decks.py`: run-input completeness audit (`INCAR`, `POSCAR`, `KPOINTS`, optional `POTCAR`)
-- `run_vasp_pipeline.sh`: single-config orchestrator (`dryrun`, `smoke`, `submit`)
-- `run_vasp_batch.sh`: batch launcher across multiple configs
-- `submit_vasp_job.sh`: sbatch wrapper preserving submit-directory provenance
-- `update_manifest_event.py`: manifest event + submission metadata updater
+- `discover_vasp_modules.sh` - search module systems for VASP, compiler and MPI modules and
+  resolve binaries; writes a report under `/tmp/hsol_vasp_discovery_<timestamp>/`.
+- `check_vasp_installation.sh` - load a module stack, check the binary and its libraries, and
+  optionally run a one-atom VASP calculation (`--run-smoke true --potcar ...`) to confirm VASP
+  starts and exits cleanly; reports the VASP version.
 
-## Does NOT Go In
-- Cluster-specific secrets (accounts, private module paths)
-- Hard-coded one-off run scripts outside config/manifest flow
-- Raw VASP outputs (store under `results/runs/<run_id>/raw`)
-
-## Mission Link
-This directory enforces reproducibility and failure transparency before expensive compute is consumed.
+See [`docs/hpc_setup.md`](../../docs/hpc_setup.md).

@@ -1,0 +1,21 @@
+# Physics settings shared by EVERY calculation in the project (included by all
+# campaign files). Energies are only comparable if these are identical, so change
+# them here - never in a single campaign - and re-run everything that depends on them.
+defaults:
+  vasp:
+    incar:
+      PREC: Accurate      # accurate FFT grids for total energies
+      ISMEAR: 1           # Methfessel-Paxton smearing, standard for metals
+      SIGMA: 0.2          # eV; check that the entropy term T*S stays < 1 meV/atom
+      LASPH: true         # non-spherical PAW terms (important for d metals)
+      LREAL: false        # reciprocal-space projection: exact, fine for <= ~40 atoms
+      ISPIN: 1            # Y, Zr, their hydrides and H2 are non-magnetic
+      LWAVE: false
+      LCHARG: false
+    kpoints:
+      style: Gamma        # Gamma-centred meshes keep the hexagonal symmetry
+  # PAW datasets (PBE). The '_sv' variants treat semicore s and p states as valence.
+  potcars:
+    Y: Y_sv
+    Zr: Zr_sv
+    H: H

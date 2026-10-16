@@ -1,27 +1,19 @@
-"""Hydrogen solubility comparative study package."""
+"""Reproducible DFT workflow for comparing hydrogen solubility in alpha-Y and alpha-Zr.
+
+The command-line entry point is ``hsol`` (see ``hydrogen_solubility.cli``); the
+modules below are importable for notebooks and tests.
+
+* ``config_models`` -- run/site configuration schemas
+* ``structures``    -- hcp, interstitial, H2 and hydride POSCAR builders
+* ``vasp_inputs``   -- INCAR/KPOINTS/POTCAR writers
+* ``vasp_metrics``  -- OUTCAR/OSZICAR parsers and ``metrics.json`` payloads
+* ``run_bootstrap`` -- ``hsol prepare``: run directories, inputs, provenance
+* ``pipeline``      -- ``hsol run``: dryrun -> smoke -> submit on Slurm
+* ``results_index`` -- ``hsol collect`` / ``hsol status``
+* ``planner``       -- ``hsol plan``: campaign file -> run configs
+* ``convergence``, ``thermo``, ``solubility`` -- analysis
+"""
 
 from .__version__ import __version__
-from .config_models import ConfigValidationError, Stage1HostConfig, load_stage1_host_config
-from .pipeline import extract_and_write_metrics, load_config, write_manifest, write_metrics, write_report
-from .reporting import render_run_report, write_run_report
-from .run_bootstrap import RunInitializationError, init_run_from_config
-from .vasp_metrics import build_stage1_metrics_payload, parse_oszicar, parse_outcar
 
-__all__ = [
-    "__version__",
-    "ConfigValidationError",
-    "Stage1HostConfig",
-    "load_stage1_host_config",
-    "load_config",
-    "write_manifest",
-    "write_metrics",
-    "write_report",
-    "extract_and_write_metrics",
-    "RunInitializationError",
-    "init_run_from_config",
-    "render_run_report",
-    "write_run_report",
-    "parse_outcar",
-    "parse_oszicar",
-    "build_stage1_metrics_payload",
-]
+__all__ = ["__version__"]

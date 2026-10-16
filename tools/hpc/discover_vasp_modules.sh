@@ -232,8 +232,9 @@ SUMMARY="$WORKDIR/README.md"
   fi
   echo
   echo "## Next Step"
-  echo "Use the best candidate module from this report with:"
-  echo '`tools/hpc/check_vasp_installation.sh --module <compiler> --module <mpi> --module <vasp> --run-smoke true --potcar /path/to/POTCAR --launch-cmd "srun -n 1"`'
+  echo "1. Verify the best candidate modules (inside an interactive allocation if your site forbids MPI on login nodes):"
+  echo '   `tools/hpc/check_vasp_installation.sh --module <compiler> --module <mpi> --module <vasp> --run-smoke true --potcar /path/to/POTCAR --launch-cmd "srun -n 1"`'
+  echo '2. Put the working module list into `environment.modules` of `configs/site.yaml`, then run `./hsol doctor`.'
 } > "$SUMMARY"
 
 log "INFO" "Discovery report generated: $SUMMARY"

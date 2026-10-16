@@ -1,0 +1,65 @@
+# Stage 2 - dilute H in tetrahedral (T) and octahedral (O) sites, plus references.
+#
+#   hsol plan configs/campaigns/stage2_h_energetics.yaml    (needs Stage 1b converged)
+#
+# Solution energy of site s (per H atom, relative to half an H2 molecule):
+#   dE_sol(s) = E(M_n H, s) - E(M_n) - 1/2 E(H2)
+# so the host supercell, both H-containing supercells and H2 must use identical
+# ENCUT, smearing and PAW datasets (enforced by common/converged settings).
+campaign: stage2_h_energetics
+stage: stage2
+description: H interstitial energies in alpha-Y and alpha-Zr, host supercells and the H2 molecule.
+include: [common_settings.yaml, converged_settings.yaml]
+
+defaults:
+  structure:
+    builder: hcp_supercell
+    lattice_from_run: "{system}_stage1_relax"   # relaxed a, c from Stage 1b
+    supercell: [3, 3, 2]                         # 36 metal atoms, ~11 A between H images
+    source: "relaxed Stage-1b lattice"
+  vasp:
+    incar:
+      EDIFF: 1.0e-6
+  hpc:
+    nodes: 1
+    ntasks: 32
+    walltime: "12:00:00"
+
+systems:
+  Y: {}
+  Zr: {}
+
+runs:
+  - label: host
+    calc_type: host_supercell
+    objective: "Energy of the pristine 3x3x2 alpha-{system} supercell (reference for H solution energies)."
+    vasp:
+      incar: {IBRION: -1, NSW: 0}         # perfect lattice: no forces, single point
+  - label: hT
+    calc_type: h_interstitial
+    objective: "Relax one H atom in a tetrahedral site of the 3x3x2 alpha-{system} supercell."
+    structure: {h_site: tetrahedral}
+    vasp:
+      incar: {IBRION: 2, ISIF: 2, NSW: 100, EDIFFG: -0.01}   # ions only, cell fixed (dilute limit)
+  - label: hO
+    calc_type: h_interstitial
+    objective: "Relax one H atom in an octahedral site of the 3x3x2 alpha-{system} supercell."
+    structure: {h_site: octahedral}
+    vasp:
+      incar: {IBRION: 2, ISIF: 2, NSW: 100, EDIFFG: -0.01}
+
+shared_runs:
+  - label: molecule
+    system: H2
+    calc_type: h2_reference
+    objective: "Relax an isolated H2 molecule: the gas-phase reference for hydrogen."
+    structure:
+      builder: h2_molecule
+      lattice_from_run: null
+      supercell: [1, 1, 1]
+      box_A: [10.0, 10.5, 11.0]      # asymmetric box avoids artificial degeneracies
+      source: "H2 dimer (0.75 A) in a vacuum box"
+    vasp:
+      incar: {ISMEAR: 0, SIGMA: 0.01, IBRION: 2, ISIF: 2, NSW: 50, EDIFFG: -0.01}  # molecule: Gaussian, tiny width
+      kpoints: {grid: [1, 1, 1], spacing: null}   # Gamma point only
+    hpc: {nodes: 1, ntasks: 8, walltime: "01:00:00"}

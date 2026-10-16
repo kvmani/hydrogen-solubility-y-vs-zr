@@ -2,7 +2,7 @@
 
 This primer is for beginners who want to understand how VASP calculations are designed, executed, and analyzed before using the advanced orchestration scripts in this repository.
 
-If you want the more project-specific DFT theory, read [`docs/dft_introduction.md`](dft_introduction.md). If you want the practical run path, read [`docs/beginner_workflow.md`](beginner_workflow.md).
+If you want the more project-specific DFT theory, read [`docs/dft_introduction.md`](dft_introduction.md). If you want the practical run path, read [Workflow](workflow.md).
 
 ## 1) What VASP Is (Philosophy + Modeling Assumptions)
 VASP solves the electronic structure problem for periodic solids using Kohn-Sham density functional theory (DFT) with a plane-wave basis and pseudopotential/PAW datasets.
@@ -86,22 +86,14 @@ Before launching any expensive run:
 - k-mesh and `ENCUT` values are part of your convergence campaign design
 
 ## 5) Running VASP On HPC (How It Actually Executes)
-On clusters, VASP is usually invoked through Slurm:
-- load modules (compiler, MPI, VASP)
-- launch with `srun ... vasp_std`
+On clusters, VASP runs inside a Slurm job: the job loads modules (compiler, MPI, VASP) and starts
+the binary through an MPI launcher, e.g. `srun vasp_std`. In this repository you never write that
+job script yourself:
 
-In this repository, use this order:
-
-1. Module discovery (if needed):
-- `tools/hpc/discover_vasp_modules.sh --keyword vasp`
-
-2. Binary/health checks:
-- `tools/hpc/check_vasp_installation.sh --module <compiler> --module <mpi> --module <vasp>`
-- optional smoke run with POTCAR
-
-3. Workflow execution:
-- `dryrun` -> `smoke` -> `submit`
-- scripts: `tools/hpc/run_vasp_pipeline.sh` and `tools/hpc/run_vasp_batch.sh`
+1. Find and verify the VASP modules once: [HPC Setup](hpc_setup.md).
+2. Put them into `configs/site.yaml`.
+3. `./hsol run` renders the job script for each run and enforces `dryrun -> smoke -> submit`
+   ([Workflow](workflow.md)).
 
 This prevents wasting queue time on avoidable setup errors.
 
@@ -143,28 +135,18 @@ Project-level acceptance adds:
 - reproducible rerun path documented
 
 ## 8) Post-Processing In This Repository
-Current automated parser:
-- `python tools/extract_metrics.py --run-dir results/runs/<run_id>`
-
-What gets captured now:
-- key energies from `OUTCAR`/`OSZICAR`
-- basic convergence flags
-- standardized `metrics.json`
-
-Where provenance lives:
-- `results/runs/<run_id>/manifest.json`
-- `results/runs/<run_id>/logs/...`
+`./hsol collect` (run automatically at the end of each job) parses `OUTCAR`, `OSZICAR` and
+`CONTCAR` into `metrics.json`: energies, SCF and ionic convergence, forces, pressure, vibrational
+modes and structure checks. It then refreshes the run's `report.html` and `results/INDEX.md`.
+Provenance (inputs, hashes, git state, job history) lives in each run's `manifest.json`; see
+[Data Model](data_model.md).
 
 ## 9) Analysis Pattern For Y vs Zr In Stage-1
-For host-only baseline calculations:
-
-1. Generate campaign configs (`make plan-stage1`).
-2. Run dry-run/smoke/submit in batch.
-3. Parse all completed runs to metrics.
-4. Compare energy trends versus:
-- `ENCUT`
-- k-grid density
-5. Select converged settings that satisfy tolerance for both systems.
+1. `./hsol plan configs/campaigns/stage1_convergence.yaml`, then prepare, run and collect.
+2. `./hsol analyze convergence` compares the energy per atom against the most accurate point of the
+   ENCUT series and of the k-point-spacing series for each metal.
+3. It recommends one ENCUT and one k-point spacing valid for both metals; you copy them into
+   `configs/campaigns/converged_settings.yaml`, which every later stage uses.
 
 Only after this should Stage-2 H-interstitial energetics begin.
 
@@ -176,12 +158,6 @@ Only after this should Stage-2 H-interstitial energetics begin.
 - Submitting large batches before dry-run/smoke validation.
 
 ## 11) How This Primer Connects To Other Docs
-Use this sequence:
-
-1. This file: `docs/vasp_primer.md`
-2. Module discovery: `hpc/vasp_module_discovery_tutorial.md`
-3. Beginner run path: `hpc/beginner_vasp_tutorial.md`
-4. Operator details: `hpc/runbook.md`
-5. Stage-1 campaign execution: `docs/stage1_campaign.md`
-
-Following this order is the fastest path from beginner status to reliable execution in this repository.
+1. This primer and [DFT Introduction](dft_introduction.md): concepts.
+2. [Scheme](scheme.md): which calculations the project needs and why.
+3. [HPC Setup](hpc_setup.md) and [Workflow](workflow.md): how to run them.

@@ -1,25 +1,12 @@
 # results/
 
-## Purpose
-Store all computational outputs in a strict, run-ID-indexed structure.
+| Path | Written by | Content |
+|---|---|---|
+| `runs/<run_id>/` | `hsol prepare`, `run`, `collect` | inputs, raw VASP outputs, `manifest.json`, `metrics.json`, `report.html` |
+| `INDEX.md`, `index.csv` | `hsol status` / `collect` | every run with status, energy and a link to its report |
+| `analysis/convergence/` | `hsol analyze convergence` | Stage-1a tables, plots, recommended settings |
+| `analysis/solubility/` | `hsol analyze solubility` | site energetics, TSS(T), plateau pressure, summary |
+| `batch_logs/` | `hsol run` | per-invocation summaries (not in git) |
 
-## Goes In
-- `runs/<run_id>/` directories with inputs, raw outputs, parsed summaries, and required JSON artifacts
-- Aggregate derived tables/plots in dedicated subfolders
-
-## Does NOT Go In
-- Source code
-- Unnamed or untracked scratch output
-
-## Mission Link
-Provides auditable evidence trails linking conclusions to exact computational artifacts.
-
-## Required Layout (per run)
-`results/runs/<run_id>/`
-- `inputs/`
-- `logs/`
-- `raw/`
-- `parsed/`
-- `manifest.json`
-- `metrics.json`
-- `report.html` (required in later tasks)
+Never edit or delete files in a run directory by hand; formats and the commit policy are in
+[`docs/data_model.md`](../docs/data_model.md).

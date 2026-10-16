@@ -1,76 +1,35 @@
-# Roadmap With Stage Gates
+# Roadmap
 
-## Stage 0: Literature Baseline And Hypothesis Framing
-- Objective: establish credible evidence map and initial hypotheses.
-- Outputs: curated `literature/lit_review.md`, `library.bib`, machine-readable benchmark extraction (`literature/benchmarks/`), gap list, testable hypotheses.
-- Gate to Stage 1:
-  - Y-H and Zr-H solubility/phase references captured with DOI-backed provenance.
-  - Initial quantitative targets defined (temperature range, composition ranges).
-  - Benchmark CSV and provenance map committed.
+Each stage ends at a gate: the listed evidence must exist (as `converged` runs plus a note in
+`progress/`) before the next stage counts as started. Tooling status: ✅ ready, ⬜ open.
 
-## Stage 1: Baseline DFT Validation (Pure Hosts)
-- Objective: validate computational setup for alpha-Y and alpha-Zr hosts.
-- Outputs: converged host energies/volumes, k-point and ENCUT convergence records.
-- Required workflow assets:
-  - generated campaign configs and plan table (`tools/plan_stage1_campaign.py`)
-  - dry-run/smoke/submit logs per run
-  - parsed metrics for all accepted points
-- Gate to Stage 2:
-  - Convergence thresholds documented and met.
-  - Manifest + metrics emitted for all validation runs.
-  - Frontend dry-run and smoke checks archived for each submitted workflow.
+| Stage | Goal | Tooling | Gate to pass |
+|---|---|---|---|
+| 0 Literature | Experimental anchors and hypotheses H1–H4 (`literature/lit_review.md`) | ✅ benchmarks CSV | Y and Zr anchors DOI-traceable; TSS curve points entered (⬜ manual entry pending) |
+| 1a Convergence | ENCUT and k-spacing for both metals | ✅ `stage1_convergence.yaml`, `analyze convergence` | ≤ 1 meV/atom vs most accurate point; values in `converged_settings.yaml` |
+| 1b Host lattice | PBE a, c of α-Y and α-Zr | ✅ `stage1_relax.yaml` | relaxed cells converged; deviation from experiment recorded |
+| 2 H energetics | ΔE_T, ΔE_O; site preference | ✅ `stage2_h_energetics.yaml` | both sites computed per metal; final sites checked; supercell-size check (4×4×3, `tag`) ⬜ |
+| 3 Vibrations | ZPE and F_vib(T) of H; site stability | ✅ `stage3_vibrations.yaml` | no unexplained imaginary modes; ΔZPE per site |
+| 4 Hydrides | Hydride per-H free energy | ✅ `stage4_hydrides.yaml`, `stage4_hydride_vibrations.yaml` | fluorite MH₂ relaxed and vibrated; Zr δ-hydride model choice justified ⬜ |
+| 5 Solubility model | x_H(T,p), TSS(T), plateau p(T); Y vs Zr | ✅ `analyze solubility` | trend Y ≫ Zr reproduced or the discrepancy explained; comparison with benchmarks ⬜ |
+| 6 Manuscript | Figures, tables, methods | ⬜ (`docs/manuscript_blueprint.md`) | every claim traced to run ids and citations |
 
-## Stage 2: H Interstitial Energetics
-- Objective: compute dilute-H solution energies and site preference (T/O and any symmetry-distinct sites).
-- Outputs: site-resolved energies, relaxed structures, uncertainty/sensitivity table.
-- Gate to Stage 3:
-  - Stable site hierarchy established for both Y and Zr.
-  - Cross-check against literature trends completed.
+Stages 2 and 4a only need Stage 1, so they can run in parallel; Stage 3 needs Stage 2 and
+Stage 4b needs 4a.
 
-## Stage 3: Vibrational And ZPE Corrections
-- Objective: add finite-temperature free-energy corrections relevant to H.
-- Outputs: phonon/ZPE contributions for key host+H states.
-- Gate to Stage 4:
-  - Free-energy correction protocol validated and reproducible.
-  - Correction magnitudes sanity-checked vs literature ranges.
+## Open items, in priority order
 
-## Stage 4: Hydride Competition And Phase Stability
-- Objective: include competing hydride phases in thermodynamic picture.
-- Outputs: hydride formation free energies and stability windows.
-- Gate to Stage 5:
-  - Explicit criterion for precipitation vs dilute dissolution established.
-  - Y and Zr treated under consistent reference framework.
+1. Run Stage 1a on the cluster and fill in `configs/campaigns/converged_settings.yaml`.
+2. Enter experimental TSS(T) points for Y and Zr (`literature/benchmarks/`), then add a benchmark
+   overlay to `hsol analyze solubility`.
+3. Supercell-size check: repeat Stage 2 at 4×4×3 with a `tag` and compare ΔE_s.
+4. Decide the Zr hydride model (fluorite ZrH₂ vs ε-ZrH₂ vs δ-ZrH₁.₅ ordered cells).
+5. Beyond the ideal lattice gas for Y at high H/Y (H–H pair interaction) if Stage 5 shows it matters.
 
-## Stage 5: Solubility Model Construction
-- Objective: translate first-principles energetics to c_H(T,p) predictions.
-- Outputs: calibrated model, uncertainty bars, comparison to experimental/TSS data.
-- Gate to Stage 6:
-  - Model reproduces key contrast trend (high Y, low Zr) with defensible assumptions.
-  - Residual discrepancy analysis documented.
+## Standing rules
 
-## Stage 6: Manuscript Package
-- Objective: produce publication-ready narrative and artifacts.
-- Outputs: figures, tables, methods appendix, reproducibility checklist.
-- Completion criteria:
-  - End-to-end rerunability from configs and docs.
-  - Claim-to-evidence mapping complete and citation-checked.
-
-## Cross-Stage Execution Requirement
-- Slurm runs must follow ordered workflow:
-  1. `dryrun`
-  2. `smoke`
-  3. `submit`
-- Each step must emit logs and manifest execution events.
-
-## Cross-Stage Dissemination Requirement
-- Any major result set or feature addition must produce a discussion-ready deck in `presentations/` for review:
-  - `presentations/<name>.pptx`
-  - `presentations/<name>.pdf`
-- The rendered deck files are treated as generated artifacts and are not committed.
-- Recommended generator: `tools/presentation/generate_lab_meeting_ppt.py`.
-
-## Cross-Stage Documentation Requirement
-- The Sphinx docs site under `docs/` is a required project surface, not a side note.
-- Any substantive code, workflow, or scientific-interpretation change must update the matching docs page(s) in the same change set.
-- New scientific claims must be reflected in `literature/lit_review.md` and, if needed, the BibTeX library.
-- `make docs-check` should pass before a substantive change is considered complete.
+- Slurm work always goes `dryrun → smoke → submit`; `hsol` enforces it.
+- No result is used unless its run is `converged` and its manifest is complete.
+- Changed physics means a new run id (`tag`), never an overwrite.
+- Docs, campaigns and code change together; `make check` passes before merging.
+- Major results get a lab-meeting deck (`tools/presentation/`); decks are not committed.

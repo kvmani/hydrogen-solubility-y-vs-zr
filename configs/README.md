@@ -1,27 +1,12 @@
 # configs/
 
-## Purpose
-Store versioned, reviewable run configurations that drive all workflows.
+| Path | What it is | Edit? |
+|---|---|---|
+| `campaigns/*.yaml` | one file per stage: what to compute for Y, Zr and H₂ | yes - the scientific source of truth |
+| `campaigns/common_settings.yaml` | physics shared by every calculation (smearing, PAW datasets, ...) | rarely, and then re-run everything |
+| `campaigns/converged_settings.yaml` | ENCUT and k-point spacing from `hsol analyze convergence` | once, after Stage 1a |
+| `site.example.yaml` → `site.yaml` | your cluster settings (not in git) | once per cluster |
+| `generated/` | run configs written by `hsol plan` (not in git) | never |
 
-## Goes In
-- YAML/JSON config files per stage/system
-- Explicit parameter sets and references to template inputs
-- Versioned config variants (do not overwrite old experiment definitions)
-
-## Does NOT Go In
-- Binary outputs or generated logs
-- Undocumented ad hoc parameter overrides
-
-## Mission Link
-Config-driven execution ensures reproducibility and fair Y-vs-Zr comparisons.
-
-## Validation
-- Schema reference: `docs/config_schema.md`
-- Validate configs before running:
-  - `python tools/validate_config.py configs/stage1_y_host_validation_v1.yaml`
-  - `python tools/validate_config.py configs/stage1_zr_host_validation_v1.yaml`
-
-## Output Flags
-- `outputs.write_manifest`: write/update `manifest.json`.
-- `outputs.write_metrics`: write/update `metrics.json`.
-- `outputs.write_report_html`: write/update `report.html`.
+Campaign keys are documented in [`docs/config_schema.md`](../docs/config_schema.md); the order of
+campaigns in [`docs/workflow.md`](../docs/workflow.md).

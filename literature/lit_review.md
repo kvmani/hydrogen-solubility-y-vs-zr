@@ -109,6 +109,17 @@ Current gap note: direct, systematic dilute-H site-energy studies in pure alpha-
 - **perdew1996_pbe**, **blochl1994_paw**, **kresse1996_iterative**, **kresse1999_paw_vasp**. DOIs: 10.1103/PhysRevLett.77.3865, 10.1103/PhysRevB.50.17953, 10.1103/PhysRevB.54.11169, 10.1103/PhysRevB.59.1758  
   These are method-stack references for the electronic-structure baseline (functional + PAW + VASP solver). They define the numerical context of all computed energies feeding the thermodynamic model.
 
+## 5b) Reference data used directly by the workflow
+
+- **spedding1956_lattice**: *Crystal structures and lattice parameters of high-purity Sc, Y and the rare earth metals*. DOI: 10.1107/S0365110X5600156X  
+  Source of the α-Y starting lattice (a = 3.647 Å, c = 5.731 Å) in the Stage-1 campaigns, and the experimental reference for judging the PBE-relaxed lattice of Stage 1b.
+
+- **goldak1966_zr_lattice**: *Lattice parameters, thermal expansions and Grüneisen coefficients of zirconium, 4.2 to 1130 K*. DOI: 10.1103/PhysRev.144.478  
+  Temperature-resolved α-Zr lattice parameters; source of the Zr starting geometry and the Stage-1b experimental comparison.
+
+- **nist_webbook_h2**: *NIST Chemistry WebBook, H₂*. URL: https://webbook.nist.gov/cgi/cbook.cgi?ID=C1333740  
+  Rotational constant B_e = 60.853 cm⁻¹ used for the ideal-gas H₂ chemical potential, harmonic ω_e = 4401.2 cm⁻¹ as a check on the computed stretch, and Shomate coefficients against which the gas model is validated (S°(298.15 K) = 130.68 J mol⁻¹ K⁻¹).
+
 ## 6) Open gaps + hypotheses to test
 
 ### High-priority gaps

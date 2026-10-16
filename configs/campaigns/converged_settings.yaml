@@ -1,0 +1,16 @@
+# Converged numerical settings used by every production campaign (stage1_relax
+# onwards). Fill in BOTH values after Stage 1a:
+#
+#   hsol analyze convergence     ->  results/analysis/convergence/summary.md
+#
+# The summary recommends one ENCUT and one k-point spacing valid for Y and Zr.
+# Planning a production campaign stops with a clear message while these are unset.
+defaults:
+  vasp:
+    incar:
+      ENCUT: "<ENCUT in eV from hsol analyze convergence>"
+    kpoints:
+      # 1/Angstrom including 2*pi (VASP KSPACING convention). `hsol prepare` turns
+      # it into a grid for each cell, so primitive cells, supercells and hydrides
+      # all get the same k-point density.
+      spacing: "<k-point spacing from hsol analyze convergence>"

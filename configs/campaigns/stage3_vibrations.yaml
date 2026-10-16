@@ -1,0 +1,53 @@
+# Stage 3 - H vibrations for zero-point energy and vibrational free energy.
+#
+#   hsol plan configs/campaigns/stage3_vibrations.yaml      (needs Stage 2 converged)
+#
+# Finite differences (IBRION=5) displace only the H atoms (selective dynamics); the
+# much heavier metal atoms stay fixed. This captures the dominant correction for H
+# (its zero-point energy, ~0.1-0.2 eV) at the cost of 6 force calculations per H.
+# Imaginary modes flag a site that is a saddle point rather than a minimum.
+campaign: stage3_vibrations
+stage: stage3
+description: Harmonic H vibrations in T/O sites and of the H2 molecule.
+include: [common_settings.yaml, converged_settings.yaml]
+
+defaults:
+  structure:
+    builder: from_run
+    free_species: [H]
+  vasp:
+    incar:
+      EDIFF: 1.0e-7       # forces from finite differences need a tight SCF
+      IBRION: 5           # finite differences
+      POTIM: 0.015        # displacement (Angstrom)
+      NFREE: 2            # +/- displacement for each degree of freedom
+      NSW: 1
+  hpc:
+    nodes: 1
+    ntasks: 32
+    walltime: "12:00:00"
+
+systems:
+  Y: {}
+  Zr: {}
+
+runs:
+  - label: vib_hT
+    calc_type: vibration
+    objective: "Harmonic frequencies of H in the relaxed tetrahedral site of alpha-{system}."
+    structure: {from_run: "{system}_stage2_hT", source: "relaxed CONTCAR of {system}_stage2_hT"}
+  - label: vib_hO
+    calc_type: vibration
+    objective: "Harmonic frequencies of H in the relaxed octahedral site of alpha-{system}."
+    structure: {from_run: "{system}_stage2_hO", source: "relaxed CONTCAR of {system}_stage2_hO"}
+
+shared_runs:
+  - label: vib_molecule
+    system: H2
+    calc_type: vibration
+    objective: "Harmonic stretching frequency of the relaxed H2 molecule."
+    structure: {from_run: H2_stage2_molecule, source: "relaxed CONTCAR of H2_stage2_molecule"}
+    vasp:
+      incar: {ISMEAR: 0, SIGMA: 0.01}
+      kpoints: {grid: [1, 1, 1], spacing: null}
+    hpc: {nodes: 1, ntasks: 8, walltime: "01:00:00"}

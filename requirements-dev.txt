@@ -1,0 +1,5 @@
+# Development: tests, lint and the lab-meeting deck generator (tools/presentation).
+-r requirements.txt
+pytest>=7
+ruff>=0.4
+python-pptx>=1.0.2

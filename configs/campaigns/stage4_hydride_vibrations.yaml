@@ -1,0 +1,37 @@
+# Stage 4b - H vibrations in the hydrides, so solution and hydride energies carry
+# the same zero-point/vibrational treatment.
+#
+#   hsol plan configs/campaigns/stage4_hydride_vibrations.yaml   (needs Stage 4a converged)
+#
+# All 8 H atoms of the conventional MH2 cell are displaced (24 modes); metal atoms
+# stay fixed, exactly as for the interstitial H in Stage 3.
+campaign: stage4_hydride_vibrations
+stage: stage4
+description: Harmonic H vibrations in fluorite YH2 and ZrH2.
+include: [common_settings.yaml, converged_settings.yaml]
+
+defaults:
+  structure:
+    builder: from_run
+    free_species: [H]
+  vasp:
+    incar:
+      EDIFF: 1.0e-7
+      IBRION: 5
+      POTIM: 0.015
+      NFREE: 2
+      NSW: 1
+  hpc:
+    nodes: 1
+    ntasks: 32
+    walltime: "12:00:00"
+
+systems:
+  Y: {}
+  Zr: {}
+
+runs:
+  - label: vib_hydride
+    calc_type: vibration
+    objective: "Harmonic H frequencies in relaxed fluorite {system}H2."
+    structure: {from_run: "{system}_stage4_hydride", source: "relaxed CONTCAR of {system}_stage4_hydride"}

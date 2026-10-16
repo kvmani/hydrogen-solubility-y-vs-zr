@@ -1,0 +1,43 @@
+# Stage 4a - competing hydride: fully relaxed dihydride MH2.
+#
+#   hsol plan configs/campaigns/stage4_hydrides.yaml        (needs converged_settings.yaml)
+#
+# The hydride fixes the solubility limit: dissolved H coexists with hydride when the
+# H chemical potentials are equal, so the terminal solid solubility depends on
+# dE_sol(site) - dE_hyd, with dE_hyd = [E(MH2) - E(M) - E(H2)] / 2 per H atom.
+#
+# Model assumption: cubic fluorite (CaF2-type) MH2 for both metals. This is the
+# YH2 structure; for Zr the precipitate is delta-ZrH(1.5-1.7) and the stoichiometric
+# phase is tetragonal epsilon-ZrH2, so the cubic cell is an approximation. Supply a
+# different hydride with `builder: file` if needed (see docs/config_schema.md).
+campaign: stage4_hydrides
+stage: stage4
+description: Relaxed fluorite dihydrides YH2 and ZrH2.
+include: [common_settings.yaml, converged_settings.yaml]
+
+defaults:
+  structure:
+    builder: fluorite_dihydride
+  vasp:
+    incar:
+      EDIFF: 1.0e-7
+      EDIFFG: 1.0e-6      # energy criterion: forces vanish by cubic symmetry
+      IBRION: 2
+      ISIF: 3
+      NSW: 60
+  hpc:
+    nodes: 1
+    ntasks: 16
+    walltime: "04:00:00"
+
+systems:
+  # Approximate starting lattice parameters only; ISIF=3 relaxes them.
+  Y:
+    structure: {a_A: 5.20, source: "fluorite YH2, approximate starting lattice"}
+  Zr:
+    structure: {a_A: 4.78, source: "fluorite ZrH2, approximate starting lattice"}
+
+runs:
+  - label: hydride
+    calc_type: hydride_relax
+    objective: "Relax fluorite {system}H2 (cell and ions) as the competing hydride phase."
