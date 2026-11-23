@@ -1,5 +1,5 @@
 # Collaboration Contract
 
-```{include} ../agents.md
+```{include} ../AGENTS.md
 :start-line: 1
 ```

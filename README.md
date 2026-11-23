@@ -37,7 +37,7 @@ Then repeat plan → prepare → run for `stage1_relax`, `stage2_h_energetics`, 
 | [docs/roadmap.md](docs/roadmap.md) | stages, gates, open items |
 | [docs/config_schema.md](docs/config_schema.md), [docs/data_model.md](docs/data_model.md) | config keys; run directories, manifests, metrics |
 | [docs/dft_introduction.md](docs/dft_introduction.md), [docs/vasp_primer.md](docs/vasp_primer.md) | DFT/VASP background for beginners |
-| [mission_goals.md](mission_goals.md), [agents.md](agents.md) | scope and collaboration rules |
+| [mission_goals.md](mission_goals.md), [AGENTS.md](AGENTS.md) | scope and collaboration rules |
 
 The same pages form a Sphinx site: `pip install -r requirements-docs.txt && make docs`.
 

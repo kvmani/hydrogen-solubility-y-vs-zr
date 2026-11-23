@@ -1,9 +1,10 @@
 name: ci
 
+# Manual only (owner's policy, 2026-11-23): CI never runs on push, pull request or a schedule.
+# Start it from the Actions tab ("Run workflow") when asked or before a release; day to day, run
+# the targeted checks listed in AGENTS.md locally.
 on:
-  push:
-    branches: [main]
-  pull_request:
+  workflow_dispatch:
 
 jobs:
   tests:

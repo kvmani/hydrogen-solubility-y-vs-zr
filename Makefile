@@ -5,7 +5,7 @@ SPHINX ?= python -m sphinx
 
 help:
 	@echo "make install         install runtime + dev dependencies"
-	@echo "make check           lint + tests + docs build (run before every commit)"
+	@echo "make check           lint + tests + docs build (before a release; day to day run targeted checks)"
 	@echo "make lint | test | docs | docs-linkcheck"
 
 install:
